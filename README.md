@@ -17,14 +17,13 @@ throughout the development and plan accordingly.
 
 
 <!-- Your exemplar title. Make it sound catchy! -->
-# This is my exemplar title
+# ReCoDE-A-BLE-neighbor-discovery-protocol-on-nRF52
 
 <!-- A brief description of your exemplar, which may include an image -->
-This is a brief abstract of my exemplar, which includes a representative image.
-![Scikit Camera Image](docs/assets/readme-img.png)
+This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional or bidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data. The protocol is designed to balance discovery latency and power consumption, making it suitable for energy-constrained applications such as wearable devices.
 
 <!-- Author information -->
-This exemplar was developed at Imperial College London by (YOUR NAME) in
+This exemplar was developed at Imperial College London by Sabrina Wang in
 collaboration with (RSE MENTOR) from Research Software Engineering and
 (RCDS MENTOR) from Research Computing & Data Science at the Early Career
 Researcher Institute.
@@ -37,15 +36,22 @@ skills will be gained by studying your ReCoDE exemplar. -->
 
 After completing this exemplar, students will:
 
-- Learning Outcome 1
-- Learning Outcome 2
-- Learning Outcome 3
+- Understand basic BLE stack concepts.
+- Implement BLE advertising, scanning, and connection.
+- Analyze power consumption in different BLE operation modes.
+- Build a simple neighbor discovery and data exchange application using BLE services.
 
 
 <!-- Audience. Think broadly as to who will benefit. -->
 ## Target Audience 🎯
 
-Who will benefit from studying this exemplar.
+* Graduate and undergraduate students new to BLE technology who need practical experience for their research or projects.
+
+* Students seeking a hands-on introduction to BLE neighbor discovery and connection protocols.
+
+* Learners interested in wireless communication and low-power device design using nRF52 platforms.
+
+* Anyone aiming to build foundational BLE skills for academic coursework or prototyping.
 
 
 <!-- Requirements.
@@ -61,13 +67,28 @@ you must include a relevant section that helps with learning this library.
 
 ### Academic 📚
 
-- Required skills/knowledge (e.g. programming languages, libraries, theory, courses)
+- Basic knowledge of C programming (variables, functions, control structures).
+
+- No prior experience with BLE is required — this exemplar includes guidance and references to official BLE tutorials to support beginners.
 
 ### System 💻
 
 - System requirements (e.g. Python 3.11+, Anaconda, 50 GB disk space, etc.)
 - Hardware or HPC requirements (if any)
+- A Nordic BLE development board (e.g. nRF52832 DK or nRF52840 DK).
 
+- A USB cable for programming and serial communication.
+
+- A development environment set up by following Lesson 1 of Nordic's official nRF Connect SDK Fundamentals course:
+
+👉 https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/
+
+    This includes installing:
+        Visual Studio Code
+        nRF Connect for VS Code extension
+        SEGGER J-Link drivers
+        The nRF Connect SDK toolchain
+    ⚙️ If you're new to Nordic development, following the course link above will walk you through everything step-by-step.
 
 <!-- Quick Start Guide. Tell learners how to engage with the exemplar. -->
 ## Getting Started 🚀
