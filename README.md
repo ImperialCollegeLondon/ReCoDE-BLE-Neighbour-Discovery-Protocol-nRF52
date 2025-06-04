@@ -83,12 +83,7 @@ you must include a relevant section that helps with learning this library.
 
 👉 https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/
 
-    This includes installing:
-        Visual Studio Code
-        nRF Connect for VS Code extension
-        SEGGER J-Link drivers
-        The nRF Connect SDK toolchain
-    ⚙️ If you're new to Nordic development, following the course link above will walk you through everything step-by-step.
+    
 
 <!-- Quick Start Guide. Tell learners how to engage with the exemplar. -->
 ## Getting Started 🚀
