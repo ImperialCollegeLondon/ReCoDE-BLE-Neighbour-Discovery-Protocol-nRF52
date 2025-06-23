@@ -8,7 +8,7 @@
 > **Title**: BLEnd: Practical Continuous Neighbor Discovery for Bluetooth Low Energy  
 > **Authors**: Julien, Christine and Liu, Chenguang and Murphy, Amy L and Picco, Gian Pietro    
 > **Published in**: IPSN '17: The 16th International Conference on Information Processing in Sensor Networks  
-> **URL**: https://dl.acm.org/doi/10.1145/3055031.3055086  
+> **URL**: [BLEnd: practical continuous neighbor discovery for Bluetooth low energy](https://dl.acm.org/doi/10.1145/3055031.3055086)
 
 If you use BLEnd in your work, please cite:
 
@@ -23,4 +23,4 @@ If you use BLEnd in your work, please cite:
 }
 ```
 ### 💻 Source Code
-> The original BLEnd source code is hosted on GitHub: https://github.com/UT-MPC/BLEnd_Nordic.git
+> The original BLEnd source code is hosted on GitHub: [BLEnd_Nordic](https://github.com/UT-MPC/BLEnd_Nordic.git)
