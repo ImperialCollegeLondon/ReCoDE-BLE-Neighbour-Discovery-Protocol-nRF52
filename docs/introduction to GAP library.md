@@ -45,7 +45,12 @@ In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential AP
 
 ## Key API Functions (from `zephyr/bluetooth/gap.h` and related)
 
-While `zephyr/bluetooth/gap.h` itself exposes a limited number of direct APIs, it defines structures and macros relevant to GAP. Actual GAP operations are often performed by combining APIs from `bluetooth/bluetooth.h` and implicitly using definitions from `bluetooth/gap.h`. Here are some common GAP-related operations you'll frequently encounter in Zephyr Bluetooth development:
+While `zephyr/bluetooth/gap.h` itself exposes a limited number of direct APIs, it defines structures and macros relevant to GAP. Actual GAP operations are often performed by combining APIs from `bluetooth/bluetooth.h` and implicitly using definitions from `bluetooth/gap.h`.  
+**Usful links**:  
+Nordic: https://docs.nordicsemi.com/bundle/zephyr-apis-latest/page/group_bt_gap.html  
+Zephyr: https://docs.zephyrproject.org/apidoc/latest/group__bt__gap.html
+
+Here are some common GAP-related operations you'll frequently encounter in Zephyr Bluetooth development:  
 ### 1. Initializing the Bluetooth Stack
 
 ```c
@@ -59,7 +64,7 @@ The bt_enable() function is the essential starting point for any Bluetooth appli
 
 * **Returns**
 Zero on success or (negative) error code otherwise.
-* **example**
+* **Example**
     ```ini
     # in prj.conf file
     # Logger module
@@ -83,3 +88,107 @@ Zero on success or (negative) error code otherwise.
         LOG_INF("Bluetooth initialized\n");
     ```	
 ### 2. Configuring Advertising Parameters
+#### a. Start advertising
+```c
+int bt_le_adv_start	(	const struct bt_le_adv_param *	param,
+                        const struct bt_data *	ad,
+                        size_t	ad_len,
+                        const struct bt_data *	sd,
+                        size_t	sd_len )
+
+```
+In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using Bluetooth Low Energy (LE) advertising. This function set advertisement parameters, advertisement data, scan response data and start advertising.  
+* **Parameters**  
+**bt_le_adv_param *	param**: Advertising parameters.
+    ```c
+
+    /** LE Advertising Parameters. */
+    struct bt_le_adv_param {
+        /**
+        * @brief Local identity.
+        *
+        * @note When extended advertising @kconfig{CONFIG_BT_EXT_ADV} is not
+        *       enabled or not supported by the controller it is not possible
+        *       to scan and advertise simultaneously using two different
+        *       random addresses.
+        */
+        uint8_t  id;
+
+        /**
+        * @brief Advertising Set Identifier, valid range 0x00 - 0x0f.
+        *
+        * @note Requires @ref BT_LE_ADV_OPT_EXT_ADV
+        **/
+        uint8_t  sid;
+
+        /**
+        * @brief Secondary channel maximum skip count.
+        *
+        * Maximum advertising events the advertiser can skip before it must
+        * send advertising data on the secondary advertising channel.
+        *
+        * @note Requires @ref BT_LE_ADV_OPT_EXT_ADV
+        */
+        uint8_t  secondary_max_skip;
+
+        /** Bit-field of advertising options */
+        uint32_t options;
+
+        /** Minimum Advertising Interval (N * 0.625 milliseconds)
+        * Minimum Advertising Interval shall be less than or equal to the
+        * Maximum Advertising Interval. The Minimum Advertising Interval and
+        * Maximum Advertising Interval should not be the same value (as stated
+        * in Bluetooth Core Spec 5.2, section 7.8.5)
+        * Range: 0x0020 to 0x4000
+        */
+        uint32_t interval_min;
+
+        /** Maximum Advertising Interval (N * 0.625 milliseconds)
+        * Minimum Advertising Interval shall be less than or equal to the
+        * Maximum Advertising Interval. The Minimum Advertising Interval and
+        * Maximum Advertising Interval should not be the same value (as stated
+        * in Bluetooth Core Spec 5.2, section 7.8.5)
+        * Range: 0x0020 to 0x4000
+        */
+        uint32_t interval_max;
+
+        /**
+        * @brief Directed advertising to peer
+        *
+        * When this parameter is set the advertiser will send directed
+        * advertising to the remote device.
+        *
+        * The advertising type will either be high duty cycle, or low duty
+        * cycle if the BT_LE_ADV_OPT_DIR_MODE_LOW_DUTY option is enabled.
+        * When using @ref BT_LE_ADV_OPT_EXT_ADV then only low duty cycle is
+        * allowed.
+        *
+        * In case of connectable high duty cycle if the connection could not
+        * be established within the timeout the connected() callback will be
+        * called with the status set to @ref BT_HCI_ERR_ADV_TIMEOUT.
+        */
+        const bt_addr_le_t *peer;
+    };
+
+
+
+```
+
+
+
+> [NOTE: Scan Response]   
+
+> * What is the Scan Response？ 
+>    Scan Response Data (SD): This is a secondary, optional packet of data Your device only sends this data in response to a specific request from a scanning device. 
+
+> * How the Scan Response Process Works?  
+>    Advertising: Your BLE device (the advertiser, often a peripheral) regularly sends out its advertising data (AD).  
+>    Scanning: Another BLE device (the scanner, often a central) is listening for these advertising packets.  
+>    Scan Request: If the scanner receives an advertising packet and wants more information from that specific advertiser, it sends a scan request packet back to the advertiser. This only happens if the advertiser's bt_le_adv_start() parameters are set to be "scannable." **Crucially**, after each advertising event, a scannable advertiser briefly opens its receiver window to listen for these incoming scan requests.  
+>    Scan Response: Upon receiving a scan request, the advertiser then sends its scan response data (SD) back to the scanner.  
+>    Information Received: The scanner now has both the initial advertising data and the more detailed scan response data for that device.  
+
+> * Why Use Scan Response?  
+>    More Data: It allows a device to expose more than the initial 31 bytes of advertising data. This is crucial if you need to provide a complete device name, more service UUIDs, or specific manufacturer data that wouldn't fit in the primary advertising packet.  
+>    Efficiency: You don't always need to broadcast all information. By putting less critical or larger chunks of data in the scan response, the device saves power on its regular advertisements, only sending the extra data when explicitly requested.  
+>    Active Scanning: The act of a scanner sending a scan request and receiving a scan response is often referred to as "active scanning." When a scanner just listens for advertising packets without sending requests, it's called "passive scanning."  

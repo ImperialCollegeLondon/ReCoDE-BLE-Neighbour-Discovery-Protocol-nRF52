@@ -8,7 +8,7 @@
 > **Title**: BLEnd: Practical Continuous Neighbor Discovery for Bluetooth Low Energy  
 > **Authors**: Julien, Christine and Liu, Chenguang and Murphy, Amy L and Picco, Gian Pietro    
 > **Published in**: IPSN '17: The 16th International Conference on Information Processing in Sensor Networks  
-> **URL**: [BLEnd: practical continuous neighbor discovery for Bluetooth low energy](https://dl.acm.org/doi/10.1145/3055031.3055086)
+> **URL**: [BLEnd: practical continuous neighbor discovery for Bluetooth low energy](https://doi.org/10.1145/3055031.3055086)
 
 If you use BLEnd in your work, please cite:
 
