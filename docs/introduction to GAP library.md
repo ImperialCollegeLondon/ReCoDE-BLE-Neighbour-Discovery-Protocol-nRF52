@@ -30,16 +30,19 @@ In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential AP
         * **Advertising**: Advertising: Devices transmit advertising packets containing information like their name and service UUIDs, making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
         * **Scanning**: Devices listen for and parse advertising packets sent by other devices. This is a primary action for **Central** and **Observer** roles.
     * **Connection**: Once devices discover each other and aim to communicate, they establish and manage a connection. GAP handles the lifecycle of these connections. This primarily involves **Central** and **Peripheral** roles.
+    <!-- 
         * **Pairing & Bonding**:
             * **Pairing**: The process of establishing shared secret keys for secure communication.
             * **Bonding**: Persisting the keys generated during pairing so that future secure connections can be established without re-pairing.
+    -->
 * **Address Types**: Bluetooth devices use addresses to uniquely identify themselves. Common address types include:
     * **Public Address**: A globally unique IEEE EUI-48 address. It's predominantly associated with Classic Bluetooth, also known as BR/EDR (Basic Rate/Enhanced Data Rate) connections.
-    * **Random Address**: Widely used in Bluetooth Low Energy (BLE), random addresses can be:
+    * **Random Address**: Widely used in Bluetooth Low Energy (BLE) 
+    <!-- , random addresses can be:
         * **Static Random Address**: Persists across device resets but differs from a public address.
         * **Resolvable Private Address (RPA)**: A dynamic, frequently changing address that enhances privacy. It can be resolved to a device's real identity using a pre-shared Identity Resolving Key (IRK), making devices harder to track.
         * **Non-Resolvable Private Address (NRPA)**: A randomly generated address that offers no resolution mechanism, ideal for scenarios where no tracking is desired.
-
+    -->
 
 ---
 
@@ -99,74 +102,26 @@ int bt_le_adv_start	(	const struct bt_le_adv_param *	param,
 ```
 In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using Bluetooth Low Energy (LE) advertising. This function set advertisement parameters, advertisement data, scan response data and start advertising.  
 * **Parameters**  
-**bt_le_adv_param *	param**: Advertising parameters.
+**bt_le_adv_param *	param**: specifies what fields (variables) are needed to describe Bluetooth Low Energy (LE) advertising parameters.
     ```c
-
+    /** in  zephyr/bluetooth/bluetooth.h */
     /** LE Advertising Parameters. */
     struct bt_le_adv_param {
-        /**
-        * @brief Local identity.
-        *
-        * @note When extended advertising @kconfig{CONFIG_BT_EXT_ADV} is not
-        *       enabled or not supported by the controller it is not possible
-        *       to scan and advertise simultaneously using two different
-        *       random addresses.
-        */
+  
         uint8_t  id;
 
-        /**
-        * @brief Advertising Set Identifier, valid range 0x00 - 0x0f.
-        *
-        * @note Requires @ref BT_LE_ADV_OPT_EXT_ADV
-        **/
+  
         uint8_t  sid;
 
-        /**
-        * @brief Secondary channel maximum skip count.
-        *
-        * Maximum advertising events the advertiser can skip before it must
-        * send advertising data on the secondary advertising channel.
-        *
-        * @note Requires @ref BT_LE_ADV_OPT_EXT_ADV
-        */
         uint8_t  secondary_max_skip;
 
-        /** Bit-field of advertising options */
         uint32_t options;
 
-        /** Minimum Advertising Interval (N * 0.625 milliseconds)
-        * Minimum Advertising Interval shall be less than or equal to the
-        * Maximum Advertising Interval. The Minimum Advertising Interval and
-        * Maximum Advertising Interval should not be the same value (as stated
-        * in Bluetooth Core Spec 5.2, section 7.8.5)
-        * Range: 0x0020 to 0x4000
-        */
         uint32_t interval_min;
 
-        /** Maximum Advertising Interval (N * 0.625 milliseconds)
-        * Minimum Advertising Interval shall be less than or equal to the
-        * Maximum Advertising Interval. The Minimum Advertising Interval and
-        * Maximum Advertising Interval should not be the same value (as stated
-        * in Bluetooth Core Spec 5.2, section 7.8.5)
-        * Range: 0x0020 to 0x4000
-        */
         uint32_t interval_max;
 
-        /**
-        * @brief Directed advertising to peer
-        *
-        * When this parameter is set the advertiser will send directed
-        * advertising to the remote device.
-        *
-        * The advertising type will either be high duty cycle, or low duty
-        * cycle if the BT_LE_ADV_OPT_DIR_MODE_LOW_DUTY option is enabled.
-        * When using @ref BT_LE_ADV_OPT_EXT_ADV then only low duty cycle is
-        * allowed.
-        *
-        * In case of connectable high duty cycle if the connection could not
-        * be established within the timeout the connected() callback will be
-        * called with the status set to @ref BT_HCI_ERR_ADV_TIMEOUT.
-        */
+       
         const bt_addr_le_t *peer;
     };
 
