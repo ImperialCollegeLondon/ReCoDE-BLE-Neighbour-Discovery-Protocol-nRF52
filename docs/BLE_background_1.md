@@ -44,8 +44,11 @@ Both scan interval and scan window range from 2.5 ms to 10.24 seconds with a ste
 Since BLE operates in the crowded ISM band, it has to share the airwaves with other technologies like Wi-Fi. This means there's always a risk of interference. On top of that, if two BLE devices try to send a signal on the same channel at the exact same time, they'll interfere with each other, making it hard for either message to get through.  
 To increase the chances that advertising packets will be received by other devices, BLE has a clever trick: it sends the same advertisement packet sequentially across all three primary advertising channels (channels 37, 38, and 39).   
 Simultaneously, a scanning device will scan these three channels to look for advertising devices. This redundancy significantly increases the likelihood that at least one of those packets will get through cleanly and be picked up by a scanning device.
-![Discovery Process](assets/BLE_background_1/process.png)
-
+- **Random Advertising Delay**
+    However, if all BLE devices were to strictly adhere to their advertising intervals, advertising packet collisions would be unavoidable in a busy wireless environment.  
+    To prevent these collisions, in actual BLE implementations, devices add a small random advertising delay to their set advertising interval. This delay, typically between 0 and 10 milliseconds (ms), is newly generated for each advertising event.  
+    By introducing this random delay, BLE devices can stagger their broadcast times, significantly reducing the probability of collisions. This in turn boosts the success rate of device discovery and promotes  
+![Discovery Process-delay](assets/BLE_background_1/adv_delay.png)
 ### Advertising Types
 * **Connectable vs. Non-Connectable**: 
 Determines whether the scanner can connect to the advertiser or not.  
