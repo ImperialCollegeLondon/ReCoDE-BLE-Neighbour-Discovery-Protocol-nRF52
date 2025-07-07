@@ -32,17 +32,27 @@ LOG_MODULE_REGISTER(ADV_ONLY_TEST, LOG_LEVEL_INF);
 #define RUN_STATUS_LED DK_LED1
 #define RUN_LED_BLINK_INTERVAL 1000
 
-#define REPEAT_COUNT 50  // broadcast 50 adv packets in each cycle
+#define REPEAT_COUNT 20  // broadcast 50 adv packets in each cycle
 
-/*  Define delayed work item*/
-static struct k_work_delayable ble_broadcast_work;
-static int broadcast_count = 0;  // adv cycle count
+
+/* Timer for scheduling advertising on/off */
+static void adv_timeout_timer_handler(struct k_timer *timer_id);
+static void adv_toggle_timer_handler(struct k_timer *timer_id);
+K_TIMER_DEFINE(adv_toggle_timer, adv_toggle_timer_handler, NULL);
+K_TIMER_DEFINE(adv_timeout_timer, adv_timeout_timer_handler, NULL);
+
+static int adv_toggle_count = 0;  // adv cycle count
+static int broadcast_stop = 0;  // adv cycle count
+
+// workqueue thread for starting and stopping advertising
+static struct k_work adv_work;
+static struct k_work adv_stop;
 
 /* BLE Advertising Parameters variable */
 static struct bt_le_adv_param *adv_param =
 	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_NONE, /* No options specified */
-			800, /* Min Advertising Interval 500ms (800*0.625ms) */
-			800, /* Max Advertising Interval 500ms (800*0.625ms) */
+			80, /* Min Advertising Interval *0.625ms) */
+			80, /* Max Advertising Interval *0.625ms) */
 			NULL); /* Set to NULL for undirected advertising */
 
 /* Declare the Company identifier (Company ID) */
@@ -67,63 +77,70 @@ static const struct bt_data ad[] = {
 };
 
 
-// Function to update advertising data
-static void update_advertising_data(void) {
-    adv_mfg_data.number += 1;
-    // Update advertising data
-    int err = bt_le_adv_update_data(ad, ARRAY_SIZE(ad), NULL, 0);
-    if (err) {
-        LOG_ERR("Failed to update advertising data (err %d)", err);
-    }
-}
+
 
 /* BLE start broadcast */
-void start_ble_broadcast(void)
+static void adv_work_handler(struct k_work *work)
+
 {
-    int err;
+    int err_start;
     // adv date: ad, no scan response data
-    err = bt_le_adv_start(adv_param, ad, ARRAY_SIZE(ad), NULL, 0);
-    if (err) {
-        LOG_ERR("Advertising failed to start (err %d)", err);
+    err_start = bt_le_adv_start(adv_param, ad, ARRAY_SIZE(ad), NULL, 0);
+    if (err_start) {
+        LOG_ERR("Advertising failed to start (err %d)", err_start);
     } else {
-        LOG_INF("Advertising started (%d times)", broadcast_count + 1);
+        LOG_INF("Advertising started (%d times)", broadcast_stop + 1);
     }
 }
 
 
 /* BLE stop broadcast */
-void stop_ble_broadcast(void)
+static void adv_stop_handler(struct k_work *work)
 {
-    int err;
-    err = bt_le_adv_stop();
-    if (err) {
-        LOG_ERR("Advertising failed to stop (err %d)", err);
+    int err_stop;
+    err_stop = bt_le_adv_stop();
+    if (err_stop) {
+        LOG_ERR("Advertising failed to stop (err %d)", err_stop);
     } else {
-       LOG_INF("Advertising stopped (%d times)", broadcast_count + 1);
+        broadcast_stop++;
+       LOG_INF("Advertising stopped (%d times)", broadcast_stop);
     }
 }
 
-/* delayed work handler */
-void ble_broadcast_handler(struct k_work *work)
+
+void adv_timeout_timer_handler(struct k_timer *timer_id)
 {
-    if (broadcast_count < 10) {  // 10 broadcast cycles
-       start_ble_broadcast();
-
-        for (int i = 0; i < REPEAT_COUNT; i++) {
-        update_advertising_data(); // Update advertising data with new sequence number
-		LOG_INF("Current sequence number: %u", adv_mfg_data.number);
-        k_sleep(K_MSEC(500)); // Delay for the advertising interval 500ms
-        }
-
-        stop_ble_broadcast(); // Stop advertising after broadcasting is done
-	    LOG_INF("Current sequence number: %u", adv_mfg_data.number);
-        k_work_schedule(&ble_broadcast_work, K_SECONDS(30));  // Delay for the broadcast cycle interval 30s
-        broadcast_count++;
-    } 
-    else {
-        LOG_INF("Finished 10 cycles of BLE broadcast");
-    }
+    // Stop advertising after broadcasting is done
+   k_work_submit(&adv_stop);
+   
 }
+
+void adv_toggle_timer_handler(struct k_timer *timer_id)
+{
+    LOG_INF(" enter adv_toggle_timer_handler");
+    if (adv_toggle_count /2 < 100){
+        if(adv_toggle_count %2 ==0){
+            //start_ble_broadcast   
+             adv_toggle_count++;
+            k_work_submit(&adv_work);
+            k_timer_start(&adv_timeout_timer, K_MSEC(2000), K_NO_WAIT);
+      
+        }
+        else
+        {
+            adv_toggle_count++;
+            LOG_INF("sleep for one cycle");
+        }
+       
+
+    }
+    else{
+        k_timer_stop(timer_id);
+         LOG_INF("Finished 10 cycles of BLE broadcast");
+    }
+    
+}
+
 
 int main(void)
 {
@@ -147,17 +164,15 @@ int main(void)
 	}
 
 	LOG_INF("Bluetooth initialized\n");
-
+    k_work_init(&adv_work, adv_work_handler);
+    k_work_init(&adv_stop, adv_stop_handler);
 	
-    LOG_INF("Advertising completed");
+    
 
-
-
-	/* init delay*/
-    k_work_init_delayable(&ble_broadcast_work, ble_broadcast_handler); 
-
-    /* start the first cycle, no delay） */
-    k_work_schedule(&ble_broadcast_work, K_NO_WAIT);  
+ 
+    k_timer_start(&adv_toggle_timer, K_NO_WAIT, K_MSEC(3000));
+    LOG_INF("timer start");
+	
 
 	/*for (;;) {
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
