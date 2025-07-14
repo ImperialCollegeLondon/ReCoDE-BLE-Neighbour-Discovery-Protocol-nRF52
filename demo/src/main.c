@@ -16,7 +16,7 @@
 #include <zephyr/bluetooth/gap.h>
 #include <bluetooth/scan.h>
 
-//#include <dk_buttons_and_leds.h>
+#include <dk_buttons_and_leds.h>
 
 LOG_MODULE_REGISTER(BLEnd_NONCONN_TEST, LOG_LEVEL_INF);
 
@@ -25,19 +25,25 @@ LOG_MODULE_REGISTER(BLEnd_NONCONN_TEST, LOG_LEVEL_INF);
 
 #define RUN_STATUS_LED DK_LED1
 #define RUN_LED_BLINK_INTERVAL 1000
+#define SCAN_LED DK_LED2
+#define ADVERTISE_LED DK_LED3
+#define MAX_DEVICE_NAME_LEN 30
 
 
 
 
 /* Timer for BLEnd timming */
-#define EPOCH_DURATION 3000
-#define ADV_DURATION 2000
+#define EPOCH_DURATION 10000		//* 10 seconds
+#define ADV_INTERVAL 800		//*0.625ms 500ms
+static	int adv_duration, scan_duration;
+static void epoch_timer_handler(struct k_timer *timer_id);
 static void adv_timeout_timer_handler(struct k_timer *timer_id);
-static void adv_toggle_timer_handler(struct k_timer *timer_id);
-K_TIMER_DEFINE(adv_toggle_timer, adv_toggle_timer_handler, NULL);
+static void scan_timeout_timer_handler(struct k_timer *timer_id);
+K_TIMER_DEFINE(epoch_timer, epoch_timer_handler, NULL);
 K_TIMER_DEFINE(adv_timeout_timer, adv_timeout_timer_handler, NULL);
+K_TIMER_DEFINE(scan_timeout_timer, scan_timeout_timer_handler, NULL);
 
-static int adv_toggle_count = 0;  // toggle count
+
 static int broadcast_stop = 0;  // adv cycle count
 
 // workqueue thread for starting and stopping advertising and scanning
@@ -49,20 +55,21 @@ static struct k_work scan_stop;
 /* BLE Advertising Parameters variable */
 static struct bt_le_adv_param *adv_param =
 	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_NONE, /* No options specified */
-			80, /* Min Advertising Interval *0.625ms) */
-			80, /* Max Advertising Interval *0.625ms) */
+			ADV_INTERVAL, /* Min Advertising Interval *0.625ms) */
+			ADV_INTERVAL, /* Max Advertising Interval *0.625ms) */
 			NULL); /* Set to NULL for undirected advertising */
 
 /* Declare the Company identifier (Company ID) */
 #define COMPANY_ID_CODE 0x0059
-
+#define BLEND_IDENTIFIER  0xFE
 typedef struct adv_mfg_data {
 	uint16_t company_code; /* Company Identifier Code. */
-	uint16_t number; /* sequence number */
+	uint16_t blend_id; /* sequence number */
 } adv_mfg_data_type;
 
+
 /* Define and initialize a variable of type adv_mfg_data_type */
-static adv_mfg_data_type adv_mfg_data = { COMPANY_ID_CODE, 0x0000 };
+static adv_mfg_data_type adv_mfg_data = { COMPANY_ID_CODE, BLEND_IDENTIFIER };
 
 /* Declare the advertising packet */
 static const struct bt_data ad[] = {
@@ -72,6 +79,14 @@ static const struct bt_data ad[] = {
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN), 
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, (unsigned char *)&adv_mfg_data, sizeof(adv_mfg_data)),   
 
+};
+
+
+// Define the bt_scan_manufacturer_data struct for the filter
+// It holds a pointer to your filter data and its length
+static struct bt_scan_manufacturer_data mfg_filter = {
+    .data = (uint8_t *)&adv_mfg_data,
+    .data_len = sizeof(adv_mfg_data),
 };
 
 
@@ -91,6 +106,7 @@ static void adv_work_handler(struct k_work *work)
     } else {
         LOG_INF("Advertising started (%d times)", broadcast_stop + 1);
     }
+	dk_set_led(ADVERTISE_LED, 1); // turn on the advertising LED
 }
 
 
@@ -104,6 +120,7 @@ static void adv_stop_handler(struct k_work *work)
         broadcast_stop++;
        LOG_INF("Advertising stopped (%d times)", broadcast_stop);
     }
+	dk_set_led(ADVERTISE_LED, 0); // turn off the advertising LED
 }
 
 
@@ -114,14 +131,39 @@ static void adv_stop_handler(struct k_work *work)
  *  - scan_stop_handler: handles the work item for stopping the scan
  *  - scan_init: initializes the scanning module and registers callbacks
 */
+static bool parse_adv_data_cb(struct bt_data *data, void *user_data)
+{
+     char *name_buffer = (char *)user_data;
+
+    switch (data->type) {
+        case BT_DATA_NAME_SHORTENED: 
+        case BT_DATA_NAME_COMPLETE:  
+            // add the device name to the buffer
+            if (data->data_len < MAX_DEVICE_NAME_LEN) {
+                memcpy(name_buffer, data->data, data->data_len);
+                name_buffer[data->data_len] = '\0'; 
+            } else {
+            
+                memcpy(name_buffer, data->data, MAX_DEVICE_NAME_LEN - 1);
+                name_buffer[MAX_DEVICE_NAME_LEN - 1] = '\0';
+            }
+            LOG_INF("device name: %s", name_buffer);
+            return false; // stop parsing further data
+        default:
+            // if the data type is not name, continue parsing
+            return true;
+    }
+}
 
 static void scan_filter_match(struct bt_scan_device_info *device_info,
 			      struct bt_scan_filter_match *filter_match,
 			      bool connectable)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
+	char device_name[MAX_DEVICE_NAME_LEN] = {0};
 
 	bt_addr_le_to_str(device_info->recv_info->addr, addr, sizeof(addr));
+	bt_data_parse(device_info->adv_data, parse_adv_data_cb, device_name);
 
 	LOG_INF("Filters matched. Address: %s connectable: %d",
 		addr, connectable);
@@ -146,12 +188,12 @@ static int scan_start(void)
 
 	bt_scan_filter_remove_all();
 
-	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_NAME,"mydevice" );
+	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_MANUFACTURER_DATA,&mfg_filter );
 	if (err) {
-		LOG_ERR("NAME filter cannot be added (err %d", err);
+		LOG_ERR("filter cannot be added (err %d", err);
 		return err;
 	}
-	filter_mode |= BT_SCAN_NAME_FILTER;
+	filter_mode |= BT_SCAN_MANUFACTURER_DATA_FILTER;
 
 	err = bt_scan_filter_enable(filter_mode, false);
 	if (err) {
@@ -164,7 +206,7 @@ static int scan_start(void)
 		LOG_ERR("Scanning failed to start (err %d)", err);
 		return err;
 	}
-
+	dk_set_led(SCAN_LED, 1); // turn on the scan LED
 	LOG_INF("Scan started");
 	return 0;
 }
@@ -187,6 +229,7 @@ static void scan_stop_handler(struct k_work *item)
         LOG_ERR("Failed to stop scan (err %d)", err);
         return err;
     }
+	dk_set_led(SCAN_LED, 0); // turn off the scan LED
     LOG_INF("scan stopped");
 }
 
@@ -211,46 +254,46 @@ static void scan_init(void)
 */
 void adv_timeout_timer_handler(struct k_timer *timer_id)
 {
-    // Stop advertising after broadcasting is done
+    LOG_INF(" enter adv_timeout_timer_handler");
+	// Stop advertising after broadcasting is done
    k_work_submit(&adv_stop);
    
 }
 
-void adv_toggle_timer_handler(struct k_timer *timer_id)
+void scan_timeout_timer_handler(struct k_timer *timer_id)
 {
-    LOG_INF(" enter adv_toggle_timer_handler");
-        if(adv_toggle_count %2 ==0){
-            //start_ble_broadcast   
-            adv_toggle_count++;
-            k_work_submit(&scan_stop);
-            k_work_submit(&adv_work);
-            k_timer_start(&adv_timeout_timer, K_MSEC(ADV_DURATION), K_NO_WAIT);
-      
-        }
-        else
-        {
-            adv_toggle_count++;
-            k_work_submit(&scan_work);
-            LOG_INF("scan for one cycle");
-        }
-    
+	LOG_INF(" enter scan_timeout_timer_handler");
+	k_work_submit(&scan_stop);
+	k_work_submit(&adv_work);
+	k_timer_start(&adv_timeout_timer, K_MSEC(adv_duration), K_NO_WAIT);
+    LOG_INF("adv timeout timer started");
+}
+
+void epoch_timer_handler(struct k_timer *timer_id)
+{
+    LOG_INF(" enter epoch_timer_handler");
+       k_work_submit(&scan_work);
+	   k_timer_start(&scan_timeout_timer, K_MSEC(scan_duration), K_NO_WAIT);
+       LOG_INF("scan timeout timer started");
 }
 
 
 
 int main(void)
 {
-	//int blink_status = 0;
+	int blink_status = 0;
 	int err;
-
+	
+	scan_duration = ADV_INTERVAL* 0.625 +10 + 5;	//one adv_interval + 10ms random delay + 5ms for one advertising packet length
+	adv_duration =EPOCH_DURATION - scan_duration - 10 ; // avoid the last adv packet to be sent after the epoch timer expires
 	LOG_INF("bi-direct BLEnd: adv only test \n");
-    /*
+    
     err = dk_leds_init();
 	if (err) {
 		LOG_ERR("LEDs init failed (err %d)\n", err);
 		return -1;
 	}
-    */
+    
 	
 	/* STEP 5 - Enable the Bluetooth LE stack */
 	err = bt_enable(NULL);
@@ -269,12 +312,12 @@ int main(void)
     
 
  
-    k_timer_start(&adv_toggle_timer, K_NO_WAIT, K_MSEC(EPOCH_DURATION));
+    k_timer_start(&epoch_timer, K_NO_WAIT, K_MSEC(EPOCH_DURATION));
     LOG_INF("BLEnd start");
 	
 
-	/*for (;;) {
+	for (;;) {
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-	}*/
+	}
 }
