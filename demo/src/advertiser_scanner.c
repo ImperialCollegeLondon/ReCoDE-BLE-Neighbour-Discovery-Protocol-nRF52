@@ -64,7 +64,11 @@ static struct bt_scan_manufacturer_data mfg_filter = {
 };
 
 
-/* starts the advertising process */
+/**
+ * @brief Starts the advertising process
+ *
+ * @param *work Workqueue thread for starting advertising
+ */
 
 void adv_work_handler(struct k_work *work)
 
@@ -80,7 +84,11 @@ void adv_work_handler(struct k_work *work)
 	dk_set_led(ADVERTISE_LED, 1); // turn on the advertising LED
 }
 
-/* stops the advertising process */
+/**
+ * @brief stops the advertising process
+ *
+ * @param *work Workqueue thread for stoping advertising
+ */
 void adv_stop_handler(struct k_work *work)
 {
     int err_stop;
@@ -184,6 +192,11 @@ int scan_start(void)
 	LOG_INF("Scan started");
 	return 0;
 }
+/**
+ * @brief Starts the scanning process
+ *
+ * @param *work Workqueue thread for starting scanning
+ */
 void scan_work_handler(struct k_work *item)
 {
 	ARG_UNUSED(item);
@@ -191,7 +204,11 @@ void scan_work_handler(struct k_work *item)
 	(void)scan_start();
 }
 
-// stops the scanning process.
+/**
+ * @brief Starts the scanning process
+ *
+ * @param *work Workqueue thread for stopping scanning
+ */
 void scan_stop_handler(struct k_work *item)
 {
 	ARG_UNUSED(item);
