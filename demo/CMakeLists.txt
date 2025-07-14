@@ -3,4 +3,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(demo)
 
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE src/main.c src/advertiser_scanner.c src/blend.c)
