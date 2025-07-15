@@ -98,7 +98,7 @@ The functions described below are central to implementing Bluetooth Low Energy (
     We can use the helper maco BT_LE_ADV_PARAM() to initialize an instance of the bt_le_adv_param structure:
     ![BT_LE_ADV_PARAM](assets/GAP/BT_LE_ADV_PARAM.png)
     - **Advertising options**: 
-        Specific macros to configure the advertising options. These options a set of configuration bits that control the behavior of the advertising process.  
+        Specific macros to configure the advertising options. These options are a set of configuration bits that control the behavior of the advertising process.
         For example:
         - BT_LE_ADV_OPT_NONE: 	simply means "don't auto-configure any behavior" — but it doesn't prevent you from manually adding things like the name.
         - BT_LE_ADV_OPT_CONNECTABLE: lets other devices connect to you.
@@ -146,9 +146,9 @@ The functions described below are central to implementing Bluetooth Low Energy (
 	    BT_DATA(BT_DATA_MANUFACTURER_DATA, (unsigned char *)&adv_mfg_data, sizeof(adv_mfg_data)),   
         };
         ```
-#### **Function**
+#### **Functions**
 - **bt_le_adv_start**:  
-    In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using Bluetooth Low Energy (LE) advertising. This function set advertisement parameters, advertisement data, scan response data and start advertising.  
+    In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using Bluetooth Low Energy (LE) advertising. This function sets advertisement parameters, advertisement data, scan response data and start advertising.  
     ```c
     int bt_le_adv_start	(	const struct bt_le_adv_param *	param,
                         const struct bt_data *	ad,     //Data to be used in advertisement packets.
@@ -185,7 +185,7 @@ The functions described below are central to implementing Bluetooth Low Energy (
     Stop advertising.  
     - **Returns**:
         Zero on success or (negative) error code otherwise.  
-        In major Bluetooth stacks like Zephyr's is that it's safe to call even if no advertising is currently active.  
+        In major Bluetooth stacks like Zephyr's, functions for stopping advertising are safe to call even if no advertising is currently active.
 - **bt_le_adv_update_data**:   
     Dynamically update the content of your advertising and/or scan response packets while the device is already actively advertising.
      ```c
