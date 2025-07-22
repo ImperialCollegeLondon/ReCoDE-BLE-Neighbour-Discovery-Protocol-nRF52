@@ -74,9 +74,12 @@ void epoch_timer_handler(struct k_timer *timer_id)
  */
 void blend_init(int epoch_duration, int adv_interval)
 {
+    int adv_interval_count;
     epoch_period = epoch_duration;
-	scan_duration = adv_interval* 0.625 +10 + 5;	//one adv_interval + 10ms random delay + 5ms for one advertising packet length
-	adv_duration =epoch_duration - scan_duration - 10 ; // avoid the last adv packet to be sent after the epoch timer expires
+    scan_duration = adv_interval* 0.625 +10 + 5;	//one adv_interval + 10ms random delay + 5ms for one advertising packet length
+    adv_interval_count = (epoch_duration/2 - scan_duration)/(adv_interval* 0.625 +5);   //an average random delay of 5ms
+    adv_interval_count += 1;    //one "incomplete" interval
+    adv_duration = adv_interval_count * (adv_interval * 0.625 +5) + 15 ; // 15 ms for the last beacon's transmission 
     LOG_INF("BLEnd init: epoch_period %d ms, adv_duration %d ms, scan_duration %d ms", epoch_period, adv_duration, scan_duration);
 }
 /**

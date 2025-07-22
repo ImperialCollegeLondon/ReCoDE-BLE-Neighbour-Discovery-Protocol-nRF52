@@ -24,6 +24,14 @@ static void scan_filter_match(struct bt_scan_device_info *device_info,
 static int scan_start(void);
 static void scan_work_handler(struct k_work *item);
 static void scan_stop_handler(struct k_work *item);
+static const struct bt_le_scan_param my_scan_param = {
+    .type = BT_LE_SCAN_TYPE_PASSIVE, // Use passive scanning
+    .interval = BT_GAP_SCAN_SLOW_INTERVAL_1, 
+    .window = BT_GAP_SCAN_SLOW_INTERVAL_1,    
+    .options = BT_LE_SCAN_OPT_NONE,        // No special options, or BT_LE_SCAN_OPT_FILTER_DUPLICATE for common usage
+    .timeout = 0,                          // Scan indefinitely (0 means no timeout)
+};
+
 
 static int broadcast_stop = 0;  // adv cycle count
 /* BLE Advertising Parameters variable */
@@ -157,7 +165,6 @@ BT_SCAN_CB_INIT(scan_cb, scan_filter_match, NULL,
 int scan_start(void)
 {
 	int err;
-	uint8_t filter_mode = 0;
 	//make sure the scan is stopped before starting a new one
 	err = bt_scan_stop();
     if (err == -EALREADY) {
@@ -168,20 +175,7 @@ int scan_start(void)
         return err;
     }
 
-	bt_scan_filter_remove_all();
-
-	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_MANUFACTURER_DATA,&mfg_filter );
-	if (err) {
-		LOG_ERR("filter cannot be added (err %d", err);
-		return err;
-	}
-	filter_mode |= BT_SCAN_MANUFACTURER_DATA_FILTER;
-
-	err = bt_scan_filter_enable(filter_mode, false);
-	if (err) {
-		LOG_ERR("Filters cannot be turned on (err %d)", err);
-		return err;
-	}
+	
 
 	err = bt_scan_start(BT_SCAN_TYPE_SCAN_PASSIVE);
 	if (err) {
@@ -229,12 +223,29 @@ void scan_stop_handler(struct k_work *item)
 // Sets up the scan parameters and registers the scan callback.
 void scan_init(void)
 {
+	int err;
+	uint8_t filter_mode = 0;
 	struct bt_scan_init_param scan_init = {
+		.scan_param = &my_scan_param,
 		.connect_if_match = false,
 	};
 
 	bt_scan_init(&scan_init);
 	bt_scan_cb_register(&scan_cb);
+	bt_scan_filter_remove_all();
+
+	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_MANUFACTURER_DATA,&mfg_filter );
+	if (err) {
+		LOG_ERR("filter cannot be added (err %d", err);
+		return err;
+	}
+	filter_mode |= BT_SCAN_MANUFACTURER_DATA_FILTER;
+
+	err = bt_scan_filter_enable(filter_mode, false);
+	if (err) {
+		LOG_ERR("Filters cannot be turned on (err %d)", err);
+		return err;
+	}
 
 	k_work_init(&scan_work, scan_work_handler);
     k_work_init(&scan_stop, scan_stop_handler);
