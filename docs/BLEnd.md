@@ -33,7 +33,7 @@ If you use BLEnd in your work, please cite:
 > The original BLEnd source code is hosted on GitHub: [BLEnd_Nordic](https://github.com/UT-MPC/BLEnd_Nordic.git)
 
 ## 📖 BLEnd Protocol Overview
-BLEnd segmentes time into discrete units called epochs. Within each epoch, devices switch between advertising and scanning roles. This rapid interleaving of activities enables all participating devices to both announce their presence and discover their neighbors efficiently.  
+BLEnd segmente time into discrete units called epochs. Within each epoch, devices switch between advertising and scanning roles. This rapid interleaving of activities enables all participating devices to both announce their presence and discover their neighbors efficiently.  
 
 The paper proposes three distinct algorithms for neighbor discovery:
 - Uni-directional Discovery (U-BLEnd) features a small duty cycle for low power consumption, with devices active for only just over half of each epoch, but it only guarantees uni-directional discovery.   
@@ -87,36 +87,36 @@ The timing parameters for the BLEnd application are configured during its initia
 
   Logic:
 
-  - First, we determine how many average advertising intervals (`A+5ms`) can fit within the portion of the first half-epoch remaining  after accounting for an average random delay of 5ms.
+  - First, we determine how many average advertising intervals (`A+5ms`) can fit within the portion of the first half-epoch remaining after accounting for an average random delay of 5ms.
 
   - We then add 1 to this count to ensure at least one "incomplete" interval is considered.
 
   - Multiply this advertising interval count" by `A+5ms` to get a base active duration.
 
   - Finally, we add 15ms (max_random_delay `s` + beacon_duration `b`) to this duration. This explicit addition ensures the end of the last beacon's transmission extends past the `E/2` mark.
-```c
-static int epoch_period,adv_duration, scan_duration;
-/**
- * @brief Initializes the BLEnd module
- *
- * @param epoch_duration Duration of the epoch in milliseconds
- * @param adv_interval Advertising interval in 0.625 milliseconds
- */
-void blend_init(int epoch_duration, int adv_interval)
-{
-    int adv_interval_count;
-    epoch_period = epoch_duration;
-	  scan_duration = adv_interval* 0.625 +10 + 5;	//one adv_interval + 10ms random delay + 5ms for one advertising packet length
-    adv_interval_count = (epoch_duration/2 - scan_duration)/(adv_interval* 0.625 +5);   //an average random delay of 5ms
-    adv_interval_count+=1;    //one "incomplete" interval
-	  adv_duration =adv_interval_count*(adv_interval* 0.625 +5)+15 ; // 15 ms for the last beacon's transmission 
-    LOG_INF("BLEnd init: epoch_period %d ms, adv_duration %d ms, scan_duration %d ms", epoch_period, adv_duration, scan_duration);
-}
-```
+    ```c
+    static int epoch_period,adv_duration, scan_duration;
+    /**
+    * @brief Initializes the BLEnd module
+    *
+    * @param epoch_duration Duration of the epoch in milliseconds
+    * @param adv_interval Advertising interval in 0.625 milliseconds
+    */
+    void blend_init(int epoch_duration, int adv_interval)
+    {
+        int adv_interval_count;
+        epoch_period = epoch_duration;
+	      scan_duration = adv_interval* 0.625 +10 + 5;	//one adv_interval + 10ms random delay + 5ms for one advertising packet length
+        adv_interval_count = (epoch_duration/2 - scan_duration)/(adv_interval* 0.625 +5);   //an average random delay of 5ms
+        adv_interval_count+=1;    //one "incomplete" interval
+	      adv_duration =adv_interval_count*(adv_interval* 0.625 +5)+15 ; // 15 ms for the last beacon's transmission 
+        LOG_INF("BLEnd init: epoch_period %d ms, adv_duration %d ms, scan_duration %d ms", epoch_period, adv_duration, scan_duration);
+    }
+    ```
 
-### Workflow: Timer-Driven State Transitions
-The workflow unfolds as follows:
+### Workflow: Timer-Driven State Transitions  
 
+The workflow unfolds as follows:  
 - Application Start and Epoch Initialization:  
 
   Upon the BLEnd application's initiation, the `epoch_timer` is started. This timer is configured as a periodic timer with a cycle corresponding to the full epoch length (`E`). Crucially, its initial delay is set to `K_NO_WAIT`, which means the `epoch_timer_handler` is executed immediately after the epoch_timer is started.
@@ -133,7 +133,7 @@ The workflow unfolds as follows:
   
   Within this handler:
 
-    - It submits `scan_stop`  to the workqueue to terminate the current scanning operation.
+    - It submits `scan_stop` to the workqueue to terminate the current scanning operation.
 
     - Immediately following, it submits `adv_work` to the workqueue, which then start the BLE advertising process.
 
@@ -149,4 +149,4 @@ The workflow unfolds as follows:
 
 - Workflow Repetition:
 
-  Since the `epoch_timer` is a periodic timer, it will continue to expire and trigger its handler at the completion of each epoch length (`E`). This inherent periodicity ensures that the entire sequence—scanning, transitioning to advertising, and then returning to an idle state—repeats seamlessly for every subsequent epoch, maintaining the defined operational cycle of the BLEnd node.
+  Since the `epoch_timer` is a periodic timer, it will continue to expire and trigger its handler at the completion of each epoch length (`E`). This inherent periodicity ensures that the entire sequence — scanning, transitioning to advertising, and then returning to an idle state — repeats seamlessly for every subsequent epoch, maintaining the defined operational cycle of the BLEnd node.
