@@ -47,7 +47,7 @@ Simultaneously, a scanning device will scan these three channels to look for adv
 ### Advertising Types
 * **Connectable vs. Non-Connectable**: 
 Determines whether the scanner can connect to the advertiser or not.  
-To help us visualize the process, we'll refer to a power analysis graph from Nordic Semiconductor's [online power profiler](https://devzone.nordicsemi.com/power/w/opp/2/online-power-profiler-for-bluetooth-le)—it's a great way to understand the energy consumption and timing of different advertising types.   
+To help us visualize the process, we'll refer to a power analysis graph from Nordic Semiconductor's [online power profiler](https://devzone.nordicsemi.com/power/w/opp/2/online-power-profiler-for-bluetooth-le) — it's a great way to understand the energy consumption and timing of different advertising types.   
     * Connectable:
     The graph can be used to illustrate a connectable advertising event. You'll observe a repeating pattern: the device shows a distinct, dark green peak, indicating the transmission (TX) of an advertisement packet. Immediately following each TX peak, there's a short period represented by a lighter green segment, which indicates the receive (RX) mode. This RX window is crucial as the device is listening for any incoming connection requests. This TX-then-RX sequence repeats for each of the three primary advertising channels (37, 38, and 39), although the graph itself may not explicitly label the individual channel numbers on the timeline. 
     ![Advertising:TX/RX](assets/BLE_background_1/advTXRX.png)

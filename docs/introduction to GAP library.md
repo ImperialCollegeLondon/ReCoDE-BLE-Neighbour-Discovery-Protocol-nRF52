@@ -27,7 +27,7 @@ In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential AP
     
 * **Operations & Device Interactions**
     * **Advertising & Scanning**:
-        * **Advertising**: Advertising: Devices transmit advertising packets containing information like their name and service UUIDs, making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
+        * **Advertising**: Advertising: Devices transmit advertising packets containing information like their name and service  (Universally Unique Identifier), making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
         * **Scanning**: Devices listen for and parse advertising packets sent by other devices. This is a primary action for **Central** and **Observer** roles.
     * **Connection**: Once devices discover each other and aim to communicate, they establish and manage a connection. GAP handles the lifecycle of these connections. This primarily involves **Central** and **Peripheral** roles.
     <!-- 
@@ -91,7 +91,7 @@ Zero on success or (negative) error code otherwise.
         LOG_INF("Bluetooth initialized\n");
     ```	
 ### 2. Configuring Advertisement
-The functions described below are central to implementing Bluetooth Low Energy (BLE) advertising in your applications. Before diving into their specifics, we strongly recommend you first read our [BLE Advertising and Scanning: What You Need to Know](BLE_background_1.md) document. This will give you the essential foundational knowledge of how BLE advertising works, which is crucial for understanding these functions.
+The functions described below are central to implementing BLE advertising in your applications. Before diving into their specifics, we strongly recommend you first read our [BLE Advertising and Scanning: What You Need to Know](BLE_background_1.md) document. This will give you the essential foundational knowledge of how BLE advertising works, which is crucial for understanding these functions.
 
 #### **Related Structures**  
 - **struct bt_le_adv_param**: specifies what fields (variables) are needed to describe Bluetooth Low Energy (LE) advertising parameters.
@@ -107,7 +107,7 @@ The functions described below are central to implementing Bluetooth Low Energy (
         - **Minimum advertising interval**:  is calculated as N×0.625 milliseconds and must be less than or equal to the maximum advertising interval.
         - **Maximum advertising interval**:   is also calculated as N×0.625 milliseconds and must be greater than or equal to the minimum advertising interval.   
         - For both the minimum and maximum intervals, the value of N must fall between 32 and 16384. This means the advertising interval can range from 20 milliseconds to 10.24 seconds. The API provides convenient, ready-to-use options, rather than forcing you to always manually calculate and input the raw numerical value of 'N'.
-        - the actual advertising interval used by the Bluetooth Low Energy (BLE) device will be a random value chosen by the BLE controller within that specified range (Min to Max), plus a small random delay. Some advanced BLE stacks or applications might even dynamically adjust the advertising interval within the min/max range.  
+        - the actual advertising interval used by the BLE device will be a random value chosen by the BLE controller within that specified range (Min to Max), plus a small random delay. Some advanced BLE stacks or applications might even dynamically adjust the advertising interval within the min/max range.  
     - **Peer address**: Included if directed advertising is used. Otherwise, set to NULL.   
 - **struct bt_data**:Description of different data types that can be encoded into advertising data. 
     - Populate the flags using the helper macro **BT_DATA_BYTES()**.
@@ -156,7 +156,7 @@ The functions described below are central to implementing Bluetooth Low Energy (
                         const struct bt_data *	sd,     //Data to be used in scan response packets.
                         size_t	sd_len )                //Number of elements in sd
     ```
-    - **size_t	ad_len or sd_len**:  
+    - `size_t	ad_len or sd_len`:  
         In programming APIs for BLE, you often define your advertising data as an array or list of these individual AD elements. The "number of elements in ad" would then be the size of that array/list.  
         An advertising packet might contain:  
             Element 1: Flags (BT_LE_AD_NO_BREDR)  
@@ -194,4 +194,89 @@ The functions described below are central to implementing Bluetooth Low Energy (
     ```  
     It doesn't typically stop the current advertising interval and immediately restart; instead, the change takes effect for the next scheduled advertisement.  
     You generally cannot update advertising data using bt_le_adv_update_data() if the advertising is currently stopped.
-   
+### 3. Scanner module
+While the GAP in BLE defines the core roles and procedures for device discovery and connection establishment—including both advertising and scanning concepts—the practical software implementation often encapsulates scanning functionality within a dedicated library or module. This design promotes modularity and better code organization.
+
+Consequently, when developing applications that involve scanning, you'll need to include specific headers for the scanning module in addition to the general GAP headers. For instance, in environments like Zephyr or Nordic Connect SDK, you'd include:
+```c
+    #include <zephyr/bluetooth/gap.h>
+    #include <bluetooth/scan.h>
+```
+Here, `<zephyr/bluetooth/gap.h>` provides general GAP-related definitions and APIs, while `<bluetooth/scan.h>` specifically offers functions and structures for configuring and executing BLE scan operations. You can find detailed information about the scanner module in its official documentation: [Nordic_Scanner_module](https://docs.nordicsemi.com/bundle/ncs-1.1.0/page/nrf/include/bluetooth/scan.html).
+#### **Initialization and Configuration**
+This step covers functions essential for setting up the scanner and defining its fundamental operational parameters. This is where you prepare the scanning mechanism before it becomes active.
+- **bt_scan_init**   
+    This function initializes the BLE Scanning Module. Proper initialization ensures the module is ready to execute scan operations and handle subsequent connection attempts based on the provided configuration.
+    ```c
+    void bt_scan_init(const struct bt_scan_init_param *init);
+    ```
+    - **Parameters:**
+        - `const struct bt_scan_init_param *init` 
+            ![BT_SCAN_INIT_PARAM](assets/GAP/BT_SCAN_INIT_PARAM.png)  
+- **bt_scan_cb_register**   
+    This function registers a set of callbacks that allow your application to monitor and react to various events occurring during the BLE scanning process. By registering these callbacks, your application gains visibility into when scan filters are matched, when no devices are found for a filter, or when connection attempts fail after a scan.
+    ```C
+    void bt_scan_cb_register(struct bt_scan_cb *cb);
+    ```
+    - **Parameters:**
+        - ``struct bt_scan_cb *cb``  
+            A pointer to a structure containing the function pointers for your application's scanning callbacks.   
+            The `BT_SCAN_CB_INIT` macro is a convenient way to initialize a `struct bt_scan_cb` instance with your specific callback functions. It streamlines the process by setting up the structure with the provided function pointers.
+                ![BT_SCAN_CB_INIT](assets\GAP\BT_SCAN_CB_INIT.png) 
+#### **Scan Filtering**   
+Before starting the actual scan, you'll typically want to define what kind of advertisement packets you're interested in. Functions in this category allow you to add, remove, and manage filters, ensuring your application only processes relevant scan reports.
+- **bt_scan_filter_add**   
+    This function allows you to add a new filter to the BLE scanning module. By applying filters, your application can reduce the number of irrelevant advertisement reports it receives, thereby saving processing power and focusing on devices or services of interest.
+    ```c
+    int bt_scan_filter_add(enum bt_scan_filter_type type, const void *data);
+    ```
+    - **Parameters:**
+        - `enum bt_scan_filter_type type` 
+            Specifies the type of filter to be added. This enumeration defines the criteria for filtering, such as device address, advertising data (e.g., UUIDs, manufacturer data).
+            - BT_SCAN_FILTER_TYPE_NAME: Filter for names.
+            - BT_SCAN_FILTER_TYPE_SHORT_NAME: Filter for short names.
+            - BT_SCAN_FILTER_TYPE_ADDR: Filter for addresses.
+            - BT_SCAN_FILTER_TYPE_UUID: Filter for UUIDs.
+            - BT_SCAN_FILTER_TYPE_APPEARANCE: Filter for appearances.
+            - BT_SCAN_FILTER_TYPE_MANUFACTURER_DATA: Filter for manufacturer data.
+        - `const void *data`
+            A pointer to the specific data for the filter. The type and structure of this data depend on the type parameter.
+    - **Return**  
+        0 on success, or a negative error code if the operation failed (e.g., no available space for the filter or the filter already exists).
+- **bt_scan_filter_enable**   
+    This function enables configured scanning filters. It allows you to specify which types of filters should be active and how multiple enabled filters should be combined to determine a match. This provides fine-grained control over which advertisement reports are processed by your application.
+    ```c
+    int bt_scan_filter_enable(u8_t mode, bool match_all);
+    ```
+    - **Parameters:**
+        - `u8_t mode`  
+            A bitmask indicating which types of filters to enable. You can combine multiple filter types using the bitwise OR operator.
+        - `bool match_all`  
+            `true`: AND operation. A device must match all enabled filter types (mode) to be considered a match.  
+            `false`: OR operation. A device will be considered a match if it matches any of the enabled filter types (mode). 
+    - **Return**  
+        0 If the operation was successful. Otherwise, a negative error code is returned.
+- **bt_scan_filter_remove_all**  
+    This function clears out all the specific filter data you previously added. All your saved addresses, UUIDs, etc., are gone from the module's memory.
+    ```c
+    void bt_scan_filter_remove_all(void);
+    ```
+    However, it does not change the state of the filtering mechanism itself. If you previously called `bt_scan_filter_enable` to turn the filtering on, it remains on.
+#### **Scan Control**   
+This step manages the active state of the scanner. This includes starting the scanning process or stopping it entirely.
+- **bt_scan_start**   
+    This function starts the scanning according to the configuration set during the initialization.
+    ```c
+    int bt_scan_start(enum bt_scan_type scan_type);
+    ```
+    - **Parameters:**
+        - `enum bt_scan_type scan_type`  
+            - `BT_SCAN_TYPE_SCAN_PASSIVE`: The scanner (Observer role) only listens for advertisement packets from other devices. It does not transmit any packets, such as scan requests. 
+            - `BT_SCAN_TYPE_SCAN_ACTIVE`:  In active scanning, the scanner actively participates in the discovery process. When it receives an advertising packet from a scannable or connectable advertiser, it sends a Scan Request (SCAN_REQ) packet back to that advertiser.
+    - **Return**  
+        0 If the operation was successful. Otherwise, a negative error code is returned.
+- **bt_scan_stop**  
+    Function for stopping scanning.
+    ```c
+    int bt_scan_stop(void);
+    ```
