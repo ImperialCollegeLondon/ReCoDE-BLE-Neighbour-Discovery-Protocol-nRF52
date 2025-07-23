@@ -39,7 +39,7 @@ static bool app_button_cb(void)
 	return app_button_state;
 }
 
-/* STEP 10 - Declare a varaible app_callbacks of type my_lbs_cb and initiate its members to the applications call back functions we developed in steps 8.2 and 9.2. */
+/* Declare a varaible app_callbacks of type my_lbs_cb and initiate its members to the applications call back functions  */
 static struct my_lbs_cb app_callbacks = {
 	.button_cb = app_button_cb,
 };
@@ -48,27 +48,36 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 {
 	if (has_changed & USER_BUTTON) {
 		uint32_t user_button_state = button_state & USER_BUTTON;
+		/*  Send indication on a button press */
+		my_lbs_send_button_state_indicate(user_button_state);
 		app_button_state = user_button_state ? true : false;
 	}
 }
 
 static void on_connected(struct bt_conn *conn, uint8_t err)
 {
+	struct bt_conn_info info = {0};
 	if (err) {
 		LOG_INF("Connection failed (err %u)\n", err);
 		return;
 	}
 	blend_stop();
 	LOG_INF("Connected\n");
+	if (info.role == BT_CONN_ROLE_PERIPHERAL) {
+		dk_set_led_on(CONN_LED_PERIPHERAL);
+	}
+	if (info.role == BT_CONN_ROLE_CENTRAL) {
+		dk_set_led_on(CONN_LED_CENTRAL);
+	}
 
-	dk_set_led_on(CONN_LED_PERIPHERAL);
+	
 }
 
 static void on_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	LOG_INF("Disconnected (reason %u)\n", reason);
 
-	dk_set_led_off(CONN_LED_PERIPHERAL);
+	dk_set_led_off(CONN_LED_PERIPHERAL & CONN_LED_CENTRAL);
 	blend_start();
 }
 
@@ -91,7 +100,7 @@ static int init_button(void)
 
 int main(void)
 {
-	int blink_status = 0;
+
 	int err;
 	
 	LOG_INF("bi-direct BLEnd: adv only test \n");
@@ -132,14 +141,4 @@ int main(void)
 	blend_init(EPOCH_DURATION, ADV_INTERVAL);
 	blend_start();
 	
-    
-
- 
-
-	
-
-	// for (;;) {
-	// 	dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
-	// 	k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-	// }
 }
