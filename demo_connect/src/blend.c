@@ -92,3 +92,18 @@ void blend_start(void)
         k_timer_start(&epoch_timer, K_NO_WAIT, K_MSEC(epoch_period));
         LOG_INF("BLEnd start");
 }
+
+/**
+ * @brief Stops the BLEnd module
+ *
+ * This function stops the epoch timer and any ongoing advertising or scanning processes.
+ */
+void blend_stop (void)
+{
+        k_timer_stop(&epoch_timer);
+        k_timer_stop(&adv_timeout_timer);
+        k_timer_stop(&scan_timeout_timer);
+        k_work_submit(&adv_stop);
+        k_work_submit(&scan_stop);
+        LOG_INF("BLEnd stop");
+}

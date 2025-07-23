@@ -12,4 +12,5 @@
 #include <dk_buttons_and_leds.h>
 void blend_init(int epoch_duration, int adv_interval);
 void blend_start(void);
+void blend_stop(void);
 
