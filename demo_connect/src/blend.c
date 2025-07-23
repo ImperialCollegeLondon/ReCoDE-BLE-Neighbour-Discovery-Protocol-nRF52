@@ -2,7 +2,6 @@
 #include "advertiser_scanner.h"
 
 LOG_MODULE_REGISTER(BLEnd_NONCONN_BLEND, LOG_LEVEL_INF);
-static int epoch_period,adv_duration, scan_duration;
 /* timer and workqueue handlers
     * These handlers are used to manage the timing of advertising and scanning operations.
     * The epoch timer triggers the start of a new epoch, while the adv and scan timers handle
@@ -11,10 +10,12 @@ static int epoch_period,adv_duration, scan_duration;
 static void epoch_timer_handler(struct k_timer *timer_id);
 static void adv_timeout_timer_handler(struct k_timer *timer_id);
 static void scan_timeout_timer_handler(struct k_timer *timer_id);
-
 K_TIMER_DEFINE(epoch_timer, epoch_timer_handler, NULL);
 K_TIMER_DEFINE(adv_timeout_timer, adv_timeout_timer_handler, NULL);
 K_TIMER_DEFINE(scan_timeout_timer, scan_timeout_timer_handler, NULL);
+
+
+static int epoch_period,adv_duration, scan_duration;
 
 /**
  * @brief Handler for the advertising timeout timer
@@ -24,7 +25,7 @@ K_TIMER_DEFINE(scan_timeout_timer, scan_timeout_timer_handler, NULL);
  *
  * @param timer_id Pointer to the timer that triggered this handler
  */
-static void adv_timeout_timer_handler(struct k_timer *timer_id)
+void adv_timeout_timer_handler(struct k_timer *timer_id)
 {
     LOG_INF(" enter adv_timeout_timer_handler");
 	// Stop advertising after broadcasting is done
@@ -40,7 +41,7 @@ static void adv_timeout_timer_handler(struct k_timer *timer_id)
  *
  * @param timer_id Pointer to the timer that triggered this handler
  */
-static void scan_timeout_timer_handler(struct k_timer *timer_id)
+void scan_timeout_timer_handler(struct k_timer *timer_id)
 {
 	LOG_INF(" enter scan_timeout_timer_handler");
 	k_work_submit(&scan_stop);
@@ -57,7 +58,7 @@ static void scan_timeout_timer_handler(struct k_timer *timer_id)
  *
  * @param timer_id Pointer to the timer that triggered this handler
  */
-static void epoch_timer_handler(struct k_timer *timer_id)
+void epoch_timer_handler(struct k_timer *timer_id)
 {
     LOG_INF(" enter epoch_timer_handler");
        k_work_submit(&scan_work);

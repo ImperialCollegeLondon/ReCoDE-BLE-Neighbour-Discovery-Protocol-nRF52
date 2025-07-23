@@ -1,6 +1,3 @@
-#ifndef ADV_SCAN_NONCONN
-#define ADV_SCAN_NONCONN
-
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
@@ -12,6 +9,9 @@
 #include <bluetooth/scan.h>
 
 #include <dk_buttons_and_leds.h>
+
+#define SCAN_LED DK_LED2
+#define ADVERTISE_LED DK_LED3
 
 #define MAX_DEVICE_NAME_LEN 30
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
@@ -26,11 +26,3 @@ extern struct k_work scan_stop;
 
 void adv_init(int adv_interval);
 void scan_init(void);
-
-
-
-#define SCAN_LED DK_LED2
-#define ADVERTISE_LED DK_LED3
-
-
-#endif

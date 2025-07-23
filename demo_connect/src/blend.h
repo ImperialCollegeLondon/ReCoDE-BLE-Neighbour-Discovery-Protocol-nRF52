@@ -1,5 +1,3 @@
-#ifndef BLEND_NONCONN
-#define BLEND_NONCONN
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
@@ -15,9 +13,3 @@
 void blend_init(int epoch_duration, int adv_interval);
 void blend_start(void);
 
-
-
-
-
-
-#endif

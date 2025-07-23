@@ -1,8 +1,10 @@
 #include "blend.h"
 #include "advertiser_scanner.h"
+#include "my_lbs.h"
 
 
 LOG_MODULE_REGISTER(BLEnd_NONCONN_ADV_SCAN, LOG_LEVEL_INF);
+
 
 // Define the k_work structs here.
 // This is where the memory is allocated.
@@ -34,7 +36,7 @@ static const struct bt_le_scan_param my_scan_param = {
 static int broadcast_stop = 0;  // adv cycle count
 /* BLE Advertising Parameters variable */
 static struct bt_le_adv_param *adv_param =
-	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_NONE, /* No options specified */
+	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, /* No options specified */
 			500, /* assign an initial value first */
 			500, /* assign an initial value first */
 			NULL); /* Set to NULL for undirected advertising */
@@ -68,13 +70,15 @@ static struct bt_scan_manufacturer_data mfg_filter = {
     .data = (uint8_t *)&adv_mfg_data,
     .data_len = sizeof(adv_mfg_data),
 };
+
+
 /**
  * @brief Starts the advertising process
  *
  * @param *work Workqueue thread for starting advertising
  */
 
-static void adv_work_handler(struct k_work *work)
+void adv_work_handler(struct k_work *work)
 
 {
     int err_start;
@@ -93,7 +97,7 @@ static void adv_work_handler(struct k_work *work)
  *
  * @param *work Workqueue thread for stoping advertising
  */
-static void adv_stop_handler(struct k_work *work)
+void adv_stop_handler(struct k_work *work)
 {
     int err_stop;
     err_stop = bt_le_adv_stop();
@@ -114,7 +118,7 @@ void adv_init(int adv_interval)
 }
 
 // parses the advertising data to extract the device name.
-static bool parse_adv_data_cb(struct bt_data *data, void *user_data)
+bool parse_adv_data_cb(struct bt_data *data, void *user_data)
 {
      char *name_buffer = (char *)user_data;
 
@@ -139,7 +143,7 @@ static bool parse_adv_data_cb(struct bt_data *data, void *user_data)
 }
 
 // The callback function when a scan filter match occurs.
-static void scan_filter_match(struct bt_scan_device_info *device_info,
+void scan_filter_match(struct bt_scan_device_info *device_info,
 			      struct bt_scan_filter_match *filter_match,
 			      bool connectable)
 {
@@ -158,7 +162,7 @@ BT_SCAN_CB_INIT(scan_cb, scan_filter_match, NULL,
 		NULL, NULL);
 
 //starts the scanning process.
-static int scan_start(void)
+int scan_start(void)
 {
 	int err;
 	//make sure the scan is stopped before starting a new one
@@ -187,7 +191,7 @@ static int scan_start(void)
  *
  * @param *work Workqueue thread for starting scanning
  */
-static void scan_work_handler(struct k_work *item)
+void scan_work_handler(struct k_work *item)
 {
 	ARG_UNUSED(item);
 
@@ -199,7 +203,7 @@ static void scan_work_handler(struct k_work *item)
  *
  * @param *work Workqueue thread for stopping scanning
  */
-static void scan_stop_handler(struct k_work *item)
+void scan_stop_handler(struct k_work *item)
 {
 	ARG_UNUSED(item);
     int err;
