@@ -1,7 +1,7 @@
 #include "blend.h"
 #include "advertiser_scanner.h"
 
-LOG_MODULE_REGISTER(BLEnd_NONCONN_BLEND, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(BLEnd_CONN_BLEND, LOG_LEVEL_DBG);
 /* timer and workqueue handlers
     * These handlers are used to manage the timing of advertising and scanning operations.
     * The epoch timer triggers the start of a new epoch, while the adv and scan timers handle

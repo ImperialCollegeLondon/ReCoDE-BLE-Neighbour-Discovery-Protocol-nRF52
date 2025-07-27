@@ -28,6 +28,7 @@
 #define BT_UUID_LBS_BUTTON BT_UUID_DECLARE_128(BT_UUID_LBS_BUTTON_VAL)
 
 
+
 /** @brief Callback type for when the button state is pulled. */
 typedef bool (*button_cb_t)(void);
 
@@ -36,6 +37,22 @@ struct my_lbs_cb {
 	/** Button read callback. */
 	button_cb_t button_cb;
 };
+
+/** @brief my lbs structure. */
+struct bt_my_lbs {
+	/** lbs Characteristic handle. */
+	uint16_t char_handle;
+
+	/** GATT read parameters for the Characteristic. */
+	struct bt_gatt_read_params read_params;
+
+	/** callback structure. */
+	struct my_lbs_cb *cb;
+
+	/** Connection object. */
+	struct bt_conn *conn;
+};
+
 
 /** @brief Initialize the LBS Service.
  *

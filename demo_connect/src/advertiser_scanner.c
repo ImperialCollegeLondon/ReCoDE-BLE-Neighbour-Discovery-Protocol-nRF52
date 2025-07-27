@@ -3,7 +3,7 @@
 #include "my_lbs.h"
 
 
-LOG_MODULE_REGISTER(BLEnd_NONCONN_ADV_SCAN, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(BLEnd_CONN_ADV_SCAN, LOG_LEVEL_DBG);
 
 
 // Define the k_work structs here.
@@ -168,7 +168,7 @@ int scan_start(void)
 	//make sure the scan is stopped before starting a new one
 	err = bt_scan_stop();
     if (err == -EALREADY) {
-        LOG_WRN("Scan already stopped or cancelled.");
+        //LOG_WRN("Scan already stopped or cancelled.");
     } 
     else if (err) {
         LOG_ERR("Failed to stop scan (err %d)", err);
@@ -209,7 +209,7 @@ void scan_stop_handler(struct k_work *item)
     int err;
     err = bt_scan_stop();
     if (err == -EALREADY) {
-        LOG_WRN("Scan already stopped or cancelled.");
+        //LOG_WRN("Scan already stopped or cancelled.");
     } 
     else if (err) {
         LOG_ERR("Failed to stop scan (err %d)", err);
@@ -227,7 +227,7 @@ void scan_init(void)
 	uint8_t filter_mode = 0;
 	struct bt_scan_init_param scan_init = {
 		.scan_param = &my_scan_param,
-		.connect_if_match = false,
+		.connect_if_match = true,
 	};
 
 	bt_scan_init(&scan_init);
