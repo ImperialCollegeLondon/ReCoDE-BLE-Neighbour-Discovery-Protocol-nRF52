@@ -27,7 +27,7 @@ static int epoch_period,adv_duration, scan_duration;
  */
 void adv_timeout_timer_handler(struct k_timer *timer_id)
 {
-    LOG_INF(" enter adv_timeout_timer_handler");
+    LOG_DBG(" enter adv_timeout_timer_handler");
 	// Stop advertising after broadcasting is done
    k_work_submit(&adv_stop);
    
@@ -43,11 +43,11 @@ void adv_timeout_timer_handler(struct k_timer *timer_id)
  */
 void scan_timeout_timer_handler(struct k_timer *timer_id)
 {
-	LOG_INF(" enter scan_timeout_timer_handler");
+	LOG_DBG(" enter scan_timeout_timer_handler");
 	k_work_submit(&scan_stop);
 	k_work_submit(&adv_work);
 	k_timer_start(&adv_timeout_timer, K_MSEC(adv_duration), K_NO_WAIT);
-    LOG_INF("adv timeout timer started");
+    LOG_DBG("adv timeout timer started");
 }
 
 /**
@@ -60,10 +60,10 @@ void scan_timeout_timer_handler(struct k_timer *timer_id)
  */
 void epoch_timer_handler(struct k_timer *timer_id)
 {
-    LOG_INF(" enter epoch_timer_handler");
+    LOG_DBG(" enter epoch_timer_handler");
        k_work_submit(&scan_work);
 	   k_timer_start(&scan_timeout_timer, K_MSEC(scan_duration), K_NO_WAIT);
-       LOG_INF("scan timeout timer started");
+       LOG_DBG("scan timeout timer started");
 }
 
 /**

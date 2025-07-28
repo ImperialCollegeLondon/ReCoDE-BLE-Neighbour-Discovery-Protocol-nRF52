@@ -61,11 +61,11 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 
 
 static void my_lbs_indicate_cb(struct my_lbs_client *my_lbs_c,
-				      const struct my_lbs_client_measurement *meas,
+				      const struct my_lbs_client_button_state *meas,
 				      int err)
 {
 	if (err) {
-		LOG_ERR("Error during receiving Heart Rate Measurement notification, err: %d\n",
+		LOG_ERR("Error during receiving LBS button indication, err: %d\n",
 			err);
 		return;
 	}
@@ -86,9 +86,9 @@ static void discovery_complete(struct bt_gatt_dm *dm,
 
 	my_lbs_client_handles_assign(dm, &bt_my_client);
 
-	err = my_lbs_client_measurement_subscribe(&bt_my_client, my_lbs_indicate_cb);
+	err = my_lbs_client_button_subscribe(&bt_my_client, my_lbs_indicate_cb);
 	if (err) {
-		printk("Could not subscribe to Heart Rate Measurement characteristic (err %d)\n",
+		printk("Could not subscribe to LBS button characteristic (err %d)\n",
 		       err);
 	}
 

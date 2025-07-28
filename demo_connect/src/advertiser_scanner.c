@@ -87,7 +87,7 @@ void adv_work_handler(struct k_work *work)
     if (err_start) {
         LOG_ERR("Advertising failed to start (err %d)", err_start);
     } else {
-        LOG_INF("Advertising started (%d times)", broadcast_stop + 1);
+        LOG_DBG("Advertising started (%d times)", broadcast_stop + 1);
     }
 	dk_set_led(ADVERTISE_LED, 1); // turn on the advertising LED
 }
@@ -105,7 +105,7 @@ void adv_stop_handler(struct k_work *work)
         LOG_ERR("Advertising failed to stop (err %d)", err_stop);
     } else {
         broadcast_stop++;
-       LOG_INF("Advertising stopped (%d times)", broadcast_stop);
+       LOG_DBG("Advertising stopped (%d times)", broadcast_stop);
     }
 	dk_set_led(ADVERTISE_LED, 0); // turn off the advertising LED
 }
@@ -183,7 +183,7 @@ int scan_start(void)
 		return err;
 	}
 	dk_set_led(SCAN_LED, 1); // turn on the scan LED
-	LOG_INF("Scan started");
+	LOG_DBG("Scan started");
 	return 0;
 }
 /**
@@ -216,7 +216,7 @@ void scan_stop_handler(struct k_work *item)
         return;
     }
 	dk_set_led(SCAN_LED, 0); // turn off the scan LED
-    LOG_INF("scan stopped");
+    LOG_DBG("scan stopped");
 }
 
 // Initializes the scan module.
@@ -249,6 +249,6 @@ void scan_init(void)
 
 	k_work_init(&scan_work, scan_work_handler);
     k_work_init(&scan_stop, scan_stop_handler);
-	LOG_INF("Scan module initialized");
+	LOG_DBG("Scan module initialized");
 }
 

@@ -10,7 +10,7 @@
 
 /**@brief Data structure of the lbs characteristic.
  */
-struct my_lbs_client_measurement {
+struct my_lbs_client_button_state {
 	 bool button_state; /**< Button state */
 };
 
@@ -22,21 +22,20 @@ struct my_lbs_client;
 /**@brief indication callback.
  *
  * This function is called every time the client receives a indication
- * with Measurement data.
  *
  * @param[in] my_lbs_client  Service Client instance.
- * @param[in] meas  Measurement received data.
+ * @param[in] meas  received data.
  * @param[in] err 0 if the notification is valid.
  *                Otherwise, contains a (negative) error code.
  */
 typedef void (*my_lbs_client_indicate_cb)(struct my_lbs_client *my_lbs_c,
-					const struct my_lbs_client_measurement *meas,
+					const struct my_lbs_client_button_state *meas,
 					int err);
 
 
-/**@brief my lbs Measurement characteristic structure.
+/**@brief my lbs button characteristic structure.
  */
-struct my_lbs_client_meas {
+struct my_lbs_client_button {
 	/** Value handle. */
 	uint16_t handle;
 
@@ -59,7 +58,7 @@ struct my_lbs_client {
 	struct bt_conn *conn;
 
 	/** Heart Rate Measurement characteristic. */
-	struct my_lbs_client_meas measurement_char;
+	struct my_lbs_client_button button_char;
 
 
 	/** Internal state. */
@@ -93,7 +92,16 @@ int my_lbs_client_init(struct my_lbs_client *my_lbs_c);
  * @retval 0 If the operation was successful.
  *           Otherwise, a (negative) error code is returned.
  */
-int my_lbs_client_measurement_subscribe(struct  my_lbs_client *my_lbs_c,
+
+ /**
+ * @brief Subscribe to the LBS measurement characteristic for indications.
+ *
+ * @param my_lbs_c Pointer to the LBS client structure.
+ * @param indicate_cb Callback function to handle received indications.
+ *
+ * @return 0 on success, negative error code on failure.
+ */
+int my_lbs_client_button_subscribe(struct  my_lbs_client *my_lbs_c,
 					my_lbs_client_indicate_cb indicate_cb);
 
 
@@ -107,7 +115,7 @@ int my_lbs_client_measurement_subscribe(struct  my_lbs_client *my_lbs_c,
  * @retval 0 If the operation was successful.
  *           Otherwise, a (negative) error code is returned.
  */
-int my_lbs_client_measurement_unsubscribe(struct my_lbs_client *my_lbs_c);
+int my_lbs_client_button_unsubscribe(struct my_lbs_client *my_lbs_c);
 
 
 /**@brief Function for assigning handles to Heart Rate Service Client instance.
