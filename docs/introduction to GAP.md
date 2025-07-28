@@ -27,7 +27,7 @@ In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential AP
     
 * **Operations & Device Interactions**
     * **Advertising & Scanning**:
-        * **Advertising**: Advertising: Devices transmit advertising packets containing information like their name and service  (Universally Unique Identifier), making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
+        * **Advertising**: Devices transmit advertising packets containing information like their name and service UUID(Universally Unique Identifier), making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
         * **Scanning**: Devices listen for and parse advertising packets sent by other devices. This is a primary action for **Central** and **Observer** roles.
     * **Connection**: Once devices discover each other and aim to communicate, they establish and manage a connection. GAP handles the lifecycle of these connections. This primarily involves **Central** and **Peripheral** roles.
     <!-- 
@@ -47,8 +47,7 @@ In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential AP
 ---
 
 ## Key API Functions (from `zephyr/bluetooth/gap.h` and related)
-
-While `zephyr/bluetooth/gap.h` itself exposes a limited number of direct APIs, it defines structures and macros relevant to GAP. Actual GAP operations are often performed by combining APIs from `bluetooth/bluetooth.h` and implicitly using definitions from `bluetooth/gap.h`.  
+ While `zephyr/bluetooth/gap.h` serves as the foundational header for the GAP, defining its core structures, roles, and macros, the functional APIs for specific GAP operations. Actual GAP operations are often performed by combining APIs from `bluetooth/bluetooth.h` and are often modularized into dedicated headers. For instance, `scan.h` provides functions for device discovery, and `conn.h` handles active connection management, both building upon the underlying GAP definitions established in gap.h.    
 **Usful links**:  
 Nordic: https://docs.nordicsemi.com/bundle/zephyr-apis-latest/page/group_bt_gap.html  
 Zephyr: https://docs.zephyrproject.org/apidoc/latest/group__bt__gap.html
@@ -195,7 +194,7 @@ The functions described below are central to implementing BLE advertising in you
     It doesn't typically stop the current advertising interval and immediately restart; instead, the change takes effect for the next scheduled advertisement.  
     You generally cannot update advertising data using bt_le_adv_update_data() if the advertising is currently stopped.
 ### 3. Scanner module
-While the GAP in BLE defines the core roles and procedures for device discovery and connection establishment—including both advertising and scanning concepts—the practical software implementation often encapsulates scanning functionality within a dedicated library or module. This design promotes modularity and better code organization.
+While the GAP in BLE defines the core roles and procedures for device discovery and connection establishment—including both advertising and scanning concepts—the practical software implementation often encapsulates scanning functionality within a dedicated module. This design promotes modularity and better code organization.
 
 Consequently, when developing applications that involve scanning, you'll need to include specific headers for the scanning module in addition to the general GAP headers. For instance, in environments like Zephyr or Nordic Connect SDK, you'd include:
 ```c
@@ -280,3 +279,85 @@ This step manages the active state of the scanner. This includes starting the sc
     ```c
     int bt_scan_stop(void);
     ```
+### 4. Connection
+Upon receiving a connectable advertisement, the scanner can decide to send a connection request packet back to the advertiser. This packet contains information necessary for establishing the connection, such as the scanner's address and desired connection parameters. If the advertiser accepts the connection request, a direct, point-to-point connection is established between the two devices. This transition marks a significant shift from the broadcast-based advertising phase to a communication link. Once a connection is established, both the **Central** and the **Peripheral** device have the capability to disconnect from the link.   
+        ![conn_request](assets\GAP\conn_request.png)    
+Just as `scan.h` and `scan.c` form a scanner module, a separate `conn.h` and `conn.c` module is used to provide the core functions and definitions necessary for managing a BLE connection. You can find detailed information about the scanner module in its official documentation: [Connection Management](https://docs.zephyrproject.org/apidoc/latest/group__bt__conn.html)
+
+```c
+    #include <zephyr/bluetooth/conn.h>
+```
+#### Registering Connection Instance and Callback Functions
+- **bt_conn:**
+    This struct is a fundamental data structure within the BLE stack that uniquely represents and stores all essential information about a connection. it can be initially defined as NULL and then assigned a valid connection object when a connection is successfully established.
+- **bt_conn_cb:**    
+    This structure is used for tracking the state of a connection.     
+    Data Fields:      
+    - connected:   
+        The connected callback function, part of the `bt_conn_cb` structure, is invoked by the BLE stack to notify the application when a new connection has been successfully established, providing the connection object (`conn`) and any error status (`err`).
+        ```c
+        void(* bt_conn_cb::connected) (struct bt_conn *conn, uint8_t err)
+        ```
+    - disconnected:   
+        The disconnected callback function is called by the BLE stack to inform the application when an active connection has been terminated, providing the connection object and the specific reason for the disconnection.
+        ```c
+        void(* bt_conn_cb::disconnected) (struct bt_conn *conn, uint8_t reason)
+        ```
+    - The `bt_conn_cb` structure also can include function pointers to handle other crucial connection events, such as updates to connection parameters or changes in the connection's security level...
+- **bt_conn_cb_register:**   
+    This function registers a set of callbacks to monitor connection states, returning `0` on success or `-EEXIST` if the callbacks have already been registered.
+    ```c
+    int bt_conn_cb_register	(	struct bt_conn_cb *	cb	)	
+    ```
+#### Core Functions for Active BLE Connections  
+- **bt_conn_ref:**  
+    This function is used to increment the reference count of a given struct `bt_conn` object. In systems like BLE stacks, reference counting is a common memory management technique to ensure that an object is not deallocated (freed from memory) while other parts of the code are still using it.
+
+    When you provide a connection object `conn` and call this function, you are telling the stack that you are now using this object and it should be kept alive. The function returns the connection object itself (with its incremented reference count) or NULL if the object's reference count was already zero.  
+    - **Example:**
+    ```c
+    static struct bt_conn *current_conn = NULL;
+
+    // The connected callback function
+    static void on_connected(struct bt_conn *conn, uint8_t err)
+    {
+        //store connection object with its reference count  
+        current_conn = bt_conn_ref(conn);
+    }
+    ```
+
+- **bt_conn_get_info:**
+    This function provides connection information and returns `0` on success or (negative) error code on failure.
+    ```c
+        int bt_conn_get_info	(	const struct bt_conn *	conn, struct bt_conn_info *	info )
+    ```
+    - **Parameters** 
+        - `bt_conn *	conn`   
+            Connection object.
+        - `bt_conn_info *	info`    
+            The struct `bt_conn_info` is a data structure used to provide detailed, read-only information about an active BLE connection, such as the Connection Role (Central or Peripheral), Security level and current Connection state, among other relevant parameters.   
+
+#### Managing Disconnection in BLE  
+- **bt_conn_unref:**  
+     This function is used to decrement the reference count of a struct `bt_conn` object. For every `bt_conn_ref` call, there should typically be a corresponding `bt_conn_unref` call to decrement the reference count when you're done with the object. 
+     ```c
+     void bt_conn_unref	(	struct bt_conn *	conn	)	
+     ```
+    
+- **bt_conn_disconnect:**
+    This function disconnect an active connection with the specified reason code or cancel pending outgoing connection.
+    ```c
+    int bt_conn_disconnect	(	struct bt_conn *	conn,   uint8_t	reason )
+    ```
+    - **Parameters** 
+        - `bt_conn *	conn`   
+            Connection object.
+        - `reason`      
+            - `BT_HCI_ERR_REMOTE_USER_TERM_CONN`: The remote device intentionally disconnected (disconnect reason for a normal disconnect).
+            - `BT_HCI_ERR_AUTH_FAIL`: Authentication failed.
+            - `BT_HCI_ERR_REMOTE_LOW_RESOURCES`: Remote device disconnected due to insufficient resources.
+            - `BT_HCI_ERR_REMOTE_POWER_OFF`: Remote device powered off or reset.
+            - `BT_HCI_ERR_UNSUPP_REMOTE_FEATURE`: Remote device doesn't support a requested feature.
+            - `BT_HCI_ERR_PAIRING_NOT_SUPPORTED`: Remote device doesn't support a requested feature.
+            - `BT_HCI_ERR_UNACCEPT_CONN_PARAM`: Remote device rejected proposed connection parameters.
+
