@@ -196,7 +196,7 @@ int main(void)
 
 	int err;
 	
-	LOG_INF("bi-direct BLEnd: adv only test \n");
+	LOG_INF("Uni-direct BLEnd: Connection + Service \n");
     
     err = dk_leds_init();
 	if (err) {

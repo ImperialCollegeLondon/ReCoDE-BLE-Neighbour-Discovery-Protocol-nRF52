@@ -34,7 +34,7 @@ int main(void)
 	int blink_status = 0;
 	int err;
 	
-	LOG_INF("bi-direct BLEnd: adv only test \n");
+	LOG_INF("Uni-direct BLEnd: non-connectable test \n");
     
     err = dk_leds_init();
 	if (err) {

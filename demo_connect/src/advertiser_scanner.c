@@ -168,7 +168,7 @@ int scan_start(void)
 	//make sure the scan is stopped before starting a new one
 	err = bt_scan_stop();
     if (err == -EALREADY) {
-        //LOG_WRN("Scan already stopped or cancelled.");
+        LOG_DBG("Scan already stopped or cancelled.");
     } 
     else if (err) {
         LOG_ERR("Failed to stop scan (err %d)", err);
@@ -209,7 +209,7 @@ void scan_stop_handler(struct k_work *item)
     int err;
     err = bt_scan_stop();
     if (err == -EALREADY) {
-        //LOG_WRN("Scan already stopped or cancelled.");
+        LOG_DBG("Scan already stopped or cancelled.");
     } 
     else if (err) {
         LOG_ERR("Failed to stop scan (err %d)", err);
