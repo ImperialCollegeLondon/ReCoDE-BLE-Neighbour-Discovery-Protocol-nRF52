@@ -3,11 +3,11 @@
 
 This notebook provides a walkthrough of the example in the `demo` folder. These examples are designed to demonstrate how neighbor discovery works using BLE advertisements and scanning, with a particular focus on the BLEnd protocol.
 
-For background information on BLE advertisement/scanning mechanisms and the BLEnd neighbor discovery protocol, please refer to the documentation [BLE Advertising and Scanning: What You Need to Know](..\docs\BLE_background_1.md).
+For background information on BLE advertisement/scanning mechanisms and the BLEnd neighbor discovery protocol, please refer to the documentation [BLE Advertising and Scanning: What You Need to Know](../docs/BLE_background_1.md).
 
 
 ## ⚙️ Demo Implementation
-If you're unsure how to start and manage a timer, the document [How to Use a Timer](introduction_to_Ktimer.md) provides a quick start guide.
+If you're unsure how to start and manage a timer, the document [How to Use a Timer](../docs/introduction_to_Ktimer.md) provides a quick start guide.
 
 In the demo_1, our application's timing and BLE operations are precisely managed by three distinct timers, each serving a specific role: 
 
@@ -100,7 +100,7 @@ The workflow unfolds as follows:
 ### Advertising and Scanning Implementation   
 The files `advertiser_scanner.c` and `advertiser_scanner.h` contain the key structures and functions used to implement advertising and scanning in this example. These components are responsible for configuring BLE roles, scheduling radio operations, and handling received advertisement packets.
 
-The implementation makes use of official Zephyr Bluetooth APIs, particularly those defined under the GAP specification. To understand how these APIs are used and the associated parameter structures, please refer to [Introduction to GAP](..\docs\introduction_to_GAP.md).
+The implementation makes use of official Zephyr Bluetooth APIs, particularly those defined under the GAP specification. To understand how these APIs are used and the associated parameter structures, please refer to [Introduction to GAP](../docs/introduction_to_GAP.md).
 
 #### Advertising   
 - **Configuration:**    
