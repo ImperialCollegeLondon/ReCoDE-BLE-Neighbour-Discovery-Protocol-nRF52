@@ -5,6 +5,7 @@ In the previous example from the `demo` folder, you learned how to configure adv
 Unlike the previous demo, this example is presented as a challenge, requiring some self-guided learning. To prepare, we highly recommend reading [Lesson 4](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/lessons/lesson-4-bluetooth-le-data-exchange/) from the Nordic Bluetooth Low Energy Fundamentals course. It provides essential background on how GATT (Generic Attribute Profile) services and characteristics are used to structure and transfer data in a BLE connection.
 
 ## LED Button Service (LBS)
+
 While Lesson 4, Exercises 1 and 2 in the Nordic tutorial provide a detailed walkthrough of configuring an LBS server, including characteristic read/write operations and sending indications, their example focuses on interaction between a BLE device (as the server) and a mobile app (as the client).
 
 In contrast, this `demo_connect` is designed to demonstrate device-to-device communication, where both the **client** and **server** are embedded BLE devices. To simplify the setup, the server only provides a basic Button Characteristic, and the emphasis is placed on client-side configuration, including service discovery, characteristic subscription, and handling received indications.
@@ -25,7 +26,25 @@ Due to the higher memory requirements of the **central** role, please make sure 
 
 Build and flash the `demo_connect` application onto both devices. Once running, each device will first execute the BLEnd protocol to discover nearby peers through advertising and scanning. After discovery, one device will initiate a connection to the other and proceed with GATT-based service interaction, completing the full discovery-and-connect flow.
 
+### Configuration
+In the `prj.conf` file, we enable the required Bluetooth GAP roles and also limit the device to a single active connection at a time, which simplifies connection management.
+
+```
+# enable BLE GAP roles
+CONFIG_BT_PERIPHERAL=y
+CONFIG_BT_CENTRAL=y
+CONFIG_BT_MAX_CONN=1
+```
+Since the central device will perform GATT service discovery and handle characteristics, we enable `CONFIG_BT_GATT_CLIENT` and `CONFIG_BT_GATT_DM` to support the client role and allow dynamic discovery of services on the peer device. Because GATT discovery and central operations require more memory, we also set `CONFIG_HEAP_MEM_POOL_SIZE=2048` to ensure the application has sufficient dynamic memory during runtime.
+
+```
+CONFIG_BT_GATT_CLIENT=y
+CONFIG_BT_GATT_DM=y
+CONFIG_HEAP_MEM_POOL_SIZE=2048
+```
+
 ### LED indicators 
+
 As in the previous demo, LED2 and LED3 are used to indicate the scanning and advertising phases, respectively. In this example, we also utilize **LED1** and **LED4** to indicate the device’s role after a connection is established:
 
 **LED1** turns on if the device is acting as a **peripheral**.
@@ -36,7 +55,7 @@ In the BLE GATT service, the peripheral functions as the **server**, while the c
 
 For the **central/client** device, **LED1** serves an additional purpose: it reflects the button state received from the server via indications. When a button pressed indication is received, LED1 turns on. When a button released message is received, LED1 turns off. This provides real-time, visible feedback that the central device is successfully receiving and interpreting the server's characteristic updates.
 
-### Server
+## Server
 
 The files `my_lbs.c` and `my_lbs.h` contain the code for the LBS server, adapted from Lesson 4, Exercises 1 and 2 in the Nordic tutorial. Since the implementation closely follows the original example, we won’t go into detail here.
 
@@ -56,7 +75,7 @@ To demonstrate the server functionality, you can use the nRF Connect for Mobile 
     ![server3](assets/demo_connect/server3.png)
     ![server4](assets/demo_connect/server4.png)
 
-### Client
+## Client
 From the interaction between the server and the mobile app, we can clearly see the key responsibilities of a central device in this context:
 
 1. Scan for the target peripheral device and initiate a connection once the device is discovered.
@@ -67,7 +86,7 @@ From the interaction between the server and the mobile app, we can clearly see t
 
 These same steps will be implemented in the client-side firmware when setting up communication between two development boards.
 
-#### Initiate a connection
+### Initiate a connection
 - **Advertiser:**
     First, we configure the device to broadcast **connectable** advertisements instead of non-connectable beacons, allowing other devices to initiate a connection once discovered.   
 
@@ -83,7 +102,7 @@ These same steps will be implemented in the client-side firmware when setting up
 - **Scanner:**
     On the scanning side, we continue to use a Manufacturer Data filter within the scan module. When a device detects an advertisement that matches this filter, it immediately initiates a connection to the advertising peer. This enables automatic pairing between BLEnd-enabled devices without user interaction.   
 
-    in `demo_connect/src/advertiser_scanner.c`     
+    in `demo_connect/src/advertiser_scanner.c`       
     ```c
         struct bt_scan_init_param scan_init = {
         .scan_param = &my_scan_param,
@@ -111,52 +130,141 @@ These same steps will be implemented in the client-side firmware when setting up
     Next, we implement the connection and disconnection callback functions to manage the BLE connection lifecycle.
 
     - Inside the **connection** callback function, we first stop the BLEnd protocol because `CONFIG_BT_MAX_CONN` is set to 1 in the `prj.conf` file. Then, we increase the reference count to safely keep track of the active connection, followed by retrieving detailed connection information. The `info.role` field indicates whether the device is currently acting as a central or peripheral. Based on this role, we turn on the corresponding LED to visually indicate the device’s role after the connection is established.
-    ```c
-    #define CONN_LED_PERIPHERAL DK_LED1
-    #define CONN_LED_CENTRAL DK_LED4
-    static void on_connected(struct bt_conn *conn, uint8_t err)
-    {
-        int err_dm;
-        struct bt_conn_info info = {0};
-        /*  check errors ... */
+        ```c
+        #define CONN_LED_PERIPHERAL DK_LED1
+        #define CONN_LED_CENTRAL DK_LED4
+        static void on_connected(struct bt_conn *conn, uint8_t err)
+        {
+            int err_dm;
+            struct bt_conn_info info = {0};
+            /*  check errors ... */
 
-        blend_stop();
+            blend_stop();
 
-        default_conn = bt_conn_ref(conn);
-        err_dm = bt_conn_get_info(default_conn, &info);
-        if (err_dm) {
-            LOG_ERR("Failed to get connection info %d\n", err);
-            return;
+            default_conn = bt_conn_ref(conn);
+            err_dm = bt_conn_get_info(default_conn, &info);
+            if (err_dm) {
+                LOG_ERR("Failed to get connection info %d\n", err);
+                return;
+            }
+            if (info.role == BT_CONN_ROLE_PERIPHERAL) {
+                    LOG_INF("Connected: BT_CONN_ROLE_PERIPHERAL\n");
+                dk_set_led_on(CONN_LED_PERIPHERAL);
+            }
+            if (info.role == BT_CONN_ROLE_CENTRAL) {
+                LOG_INF("Connected: BT_CONN_ROLE_CENTRAL\n");
+                dk_set_led_on(CONN_LED_CENTRAL);
+                /*  service discovery (next step) ... */
+            }      
         }
-        if (info.role == BT_CONN_ROLE_PERIPHERAL) {
-                LOG_INF("Connected: BT_CONN_ROLE_PERIPHERAL\n");
-            dk_set_led_on(CONN_LED_PERIPHERAL);
-        }
-        if (info.role == BT_CONN_ROLE_CENTRAL) {
-            LOG_INF("Connected: BT_CONN_ROLE_CENTRAL\n");
-            dk_set_led_on(CONN_LED_CENTRAL);
-            /*  service discovery (next step) ... */
-        }      
-    }
-    ```
+        ```
     - In the **disconnect** callback function, we log the reason for disconnection, unreference the connection object and set `default_conn` back to `NULL` since there is no active connection anymore. After that, we restart the BLEnd protocol to resume neighbor discovery following the disconnection.
-    ```c
-    static void on_disconnected(struct bt_conn *conn, uint8_t reason)
-    {
-        LOG_INF("Disconnected (reason %u)\n", reason);
+        ```c
+        static void on_disconnected(struct bt_conn *conn, uint8_t reason)
+        {
+            LOG_INF("Disconnected (reason %u)\n", reason);
 
-        dk_set_led_off( CONN_LED_CENTRAL);
-        dk_set_led_off(CONN_LED_PERIPHERAL);
+            dk_set_led_off( CONN_LED_CENTRAL);
+            dk_set_led_off(CONN_LED_PERIPHERAL);
 
-        bt_conn_unref(default_conn);
-        default_conn = NULL;
+            bt_conn_unref(default_conn);
+            default_conn = NULL;
 
-        blend_start();
-    }
-    ```
-####  Service Discovery
+            blend_start();
+        }
+        ```
+###  Service Discovery
+We first define a discovery callback structure: `struct bt_gatt_dm_cb discovery_cb`. This structure contains three callback functions that will be triggered during the GATT discovery process: one when the target service is found, one when the service is not found, and one for handling errors. In these callbacks, we simply log the service discovery states: "Service found", "Service not found", or "Error while discovering GATT database" along with the corresponding error code.
+```c
+static void discovery_complete(struct bt_gatt_dm *dm,
+			       void *context)
+{
+	
+	int err;
+	LOG_INF("Service found");
+}
 
-### Demo Results 📡
+static void discovery_service_not_found(struct bt_conn *conn,
+					void *context)
+{
+	LOG_INF("Service not found\n");
+}
+
+static void discovery_error(struct bt_conn *conn,
+			    int err,
+			    void *context)
+{
+	LOG_ERR("Error while discovering GATT database: (%d)\n", err);
+}
+
+struct bt_gatt_dm_cb discovery_cb = {
+	.completed         = discovery_complete,
+	.service_not_found = discovery_service_not_found,
+	.error_found       = discovery_error,
+};
+```
+
+In the `on_connect` callback, the central device initiates GATT service discovery using:
+```c
+static void on_connected(struct bt_conn *conn, uint8_t err){
+    int err_dm;
+    /* ... */
+    if (info.role == BT_CONN_ROLE_CENTRAL) {
+                LOG_INF("Connected: BT_CONN_ROLE_CENTRAL\n");
+                dk_set_led_on(CONN_LED_CENTRAL);
+                /*  service discovery  */
+                err_dm = bt_gatt_dm_start(default_conn,
+                          BT_UUID_LBS,
+                          &discovery_cb,
+                          NULL);
+            }       
+}
+```
+This function starts the discovery process for the LBS on the connected peripheral device. The parameters passed are:
+
+- `default_conn`: the active connection to the peer device,
+
+- `BT_UUID_LBS`: the UUID of the service to discover,
+
+- `discovery_cb`: a struct containing callback functions to be triggered during discovery,
+
+- `NULL`: a user-defined context to be passed to callback functions. Set to `NULL` here.
+
+### Discovery Complete
+
+After the GATT service discovery completes, we proceed to assign the discovered handles to our client structure and subscribe to the Button Characteristic indications. Finally, we release the discovery manager’s resources using `bt_gatt_dm_data_release` to free memory allocated during the discovery process.
+```c
+static void discovery_complete(struct bt_gatt_dm *dm,
+			       void *context)
+{
+	
+	int err;
+	LOG_INF("Service found");
+
+	my_lbs_client_handles_assign(dm, &bt_my_client);
+
+	err = my_lbs_client_button_subscribe(&bt_my_client, my_lbs_indicate_cb);
+	if (err) {
+		printk("Could not subscribe to LBS button characteristic (err %d)\n",
+		       err);
+	}
+
+	err = bt_gatt_dm_data_release(dm);
+	if (err) {
+		LOG_ERR("Could not release the discovery data (err %d)\n", err);
+	}
+}
+```
+
+The client-related functions and structures are defined in the `my_lbs_client.c` and `my_lbs_client.h` files.
+
+
+- **Assign the discovered handles:**   
+
+- **Subscribe to the Button Characteristic:**    
+  
+
+## Demo Results 📡
 Now, build and flash the `demo_connect` application onto both boards. After a short time, BLEnd will connect the two devices automatically. The peripheral device will turn on LED1, while the central device will turn on LED4 to indicate their respective roles.   
 
 ![service_results1](assets/demo_connect/service_results1.png)
