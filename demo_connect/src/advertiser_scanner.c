@@ -36,7 +36,7 @@ static const struct bt_le_scan_param my_scan_param = {
 static int broadcast_stop = 0;  // adv cycle count
 /* BLE Advertising Parameters variable */
 static struct bt_le_adv_param *adv_param =
-	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, /* No options specified */
+	BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, /* connectable */
 			500, /* assign an initial value first */
 			500, /* assign an initial value first */
 			NULL); /* Set to NULL for undirected advertising */

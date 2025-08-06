@@ -20,7 +20,7 @@ throughout the development and plan accordingly.
 # ReCoDE-A-BLE-neighbor-discovery-protocol-on-nRF52
 
 <!-- A brief description of your exemplar, which may include an image -->
-This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional or bidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data. The protocol is designed to balance discovery latency and power consumption, making it suitable for energy-constrained applications such as wearable devices.
+This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional or bidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data.
 
 <!-- Author information -->
 This exemplar was developed at Imperial College London by Sabrina Wang in
@@ -38,7 +38,6 @@ After completing this exemplar, students will:
 
 - Understand basic BLE stack concepts.
 - Implement BLE advertising, scanning, and connection.
-- Analyze power consumption in different BLE operation modes.
 - Build a simple neighbor discovery and data exchange application using BLE services.
 
 

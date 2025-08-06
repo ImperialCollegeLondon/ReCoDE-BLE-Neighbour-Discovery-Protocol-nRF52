@@ -153,7 +153,7 @@ static void on_connected(struct bt_conn *conn, uint8_t err)
 		err_dm = bt_gatt_dm_start(default_conn,
 				       BT_UUID_LBS,
 				       &discovery_cb,
-				       &bt_my_lbs);
+						NULL);
 		if (err_dm) {
 			LOG_ERR("Discover failed (err %d)\n", err_dm);
 		}
