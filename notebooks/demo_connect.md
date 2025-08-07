@@ -258,11 +258,161 @@ static void discovery_complete(struct bt_gatt_dm *dm,
 
 The client-related functions and structures are defined in the `my_lbs_client.c` and `my_lbs_client.h` files.
 
-
 - **Assign the discovered handles:**   
+    The function `my_lbs_client_handles_assign` is responsible for extracting and storing relevant GATT handles (such as the characteristic value handle and CCCD handle) from a discovered LBS, using the GATT Discovery Manager (`bt_gatt_dm`). It maps these handles into the local `my_lbs_client` structure so the client can interact with the LBS (e.g., subscribe to button state changes).
+    **Parameters:**    
+    - `my_lbs_client`: This structure is defined in `my_lbs_client.h`, which holds necessary state and data for interacting with a remote LBS on a BLE peripheral. It is used by the LBS client application to store the BLE connection, characteristic handles, and internal state for subscribing to button state indications.
+
+    - `dm`: This pointer is a reference to a GATT Discovery Manager `bt_gatt_dm` instance, which contains the results of a completed service discovery procedure on a connected BLE peripheral.
+
+    In `my_lbs_client.h`   
+    ```c
+        struct my_lbs_client_button {
+            /** Value handle. */
+            uint16_t handle;
+
+            /** Handle of the characteristic CCC descriptor. */
+            uint16_t ccc_handle;
+
+            /** GATT subscribe parameters for indicate. */
+            struct bt_gatt_subscribe_params indicate_params;
+
+            /** Indicate callback. */
+            my_lbs_client_indicate_cb indicate_cb;
+        };
+
+        struct my_lbs_client {
+            /** Connection object. */
+            struct bt_conn *conn;
+
+            /** LBS button characteristic. */
+            struct my_lbs_client_button button_char;
+
+            /** Internal state. */
+            atomic_t state;
+        };
+
+    ```
+
+    In `my_lbs_client.c`   
+    ```c
+    int my_lbs_client_handles_assign(struct bt_gatt_dm *dm, struct my_lbs_client *my_lbs_c)
+    {
+        // Get the primary service attribute and value
+        const struct bt_gatt_dm_attr *gatt_service_attr = bt_gatt_dm_service_get(dm);
+        const struct bt_gatt_service_val *gatt_service = bt_gatt_dm_attr_service_val(gatt_service_attr);
+
+        // Declare variables for characteristic and descriptor attributes
+        const struct bt_gatt_dm_attr *gatt_chrc;
+        const struct bt_gatt_dm_attr *gatt_desc;
+
+        // Check for null pointers
+        if (!dm || !my_lbs_c) {
+            return -EINVAL;
+        }
+
+        // Verify that the discovered service is the expected LBS
+        if (bt_uuid_cmp(gatt_service->uuid, BT_UUID_LBS)) {
+            return -ENOTSUP;  // Service not supported
+        }
+
+        LOG_DBG("Getting handles from my_lbs service.");
+
+        // Reinitialize the client structure to clear any previous state
+        my_lbs_reinit(my_lbs_c);
+
+        // Find the LBS-BUTTON characteristic by UUID
+        gatt_chrc = bt_gatt_dm_char_by_uuid(dm, BT_UUID_LBS_BUTTON);
+        if (!gatt_chrc) {
+            LOG_ERR("No LBS characteristic found.");
+            return -EINVAL;
+        }
+
+        // Find the characteristic value descriptor (i.e., the actual value handle)
+        gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_LBS_BUTTON);
+        if (!gatt_desc) {
+            LOG_ERR("No LBS-BUTTON characteristic value found.");
+            return -EINVAL;
+        }
+
+        // Store the value handle in the client structure
+        my_lbs_c->button_char.handle = gatt_desc->handle;
+
+        // Find the CCCD (Client Characteristic Configuration Descriptor)
+        gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_GATT_CCC);
+        if (!gatt_desc) {
+            LOG_ERR("No LBS-BUTTON CCC descriptor found.");
+            return -EINVAL;
+        }
+
+        // Store the CCC handle in the client structure
+        my_lbs_c->button_char.ccc_handle = gatt_desc->handle;
+
+        LOG_DBG("LBS-BUTTON characteristic found");
+
+        // Store the BLE connection reference for future operations
+        my_lbs_c->conn = bt_gatt_dm_conn_get(dm);
+
+        return 0;  // Success
+    }
+
+    ```
 
 - **Subscribe to the Button Characteristic:**    
-  
+    The purpose of the function `my_lbs_client_button_subscribe` is to allow the client device to subscribe to indication messages from a remote BLE peripheral, so it can be indicated when the button state changes.
+   
+    The function first validates the input client structure and callback, then uses `atomic_test_and_set_bit` to check whether indication has already been enabled (`INDICATE_ENABLED`).
+
+    It then sets the subscription parameters, including `ccc_handle`, `value_handle`, `value` (set to `BT_GATT_CCC_INDICATE`), and the `notify` callback. It also sets the `BT_GATT_SUBSCRIBE_FLAG_VOLATILE` flag to ensure the subscription is re-established after disconnection.
+    
+    Finally, it calls `bt_gatt_subscribe` to subscribe to the indication and returns the result.   
+ 
+    **Parameters:**    
+    - `my_lbs_c`: A pointer to the LBS client structure, which holds connection and characteristic information.    
+    - `dicate_cb`: A user-provided callback function that will be invoked when an indication is received from the button characteristic.    
+   
+    ```c
+    int my_lbs_client_button_subscribe(struct  my_lbs_client *my_lbs_c,
+                        my_lbs_client_indicate_cb indicate_cb)
+    {
+        int err;
+
+        // Create a local pointer alias to simplify access to the indication parameters
+        struct bt_gatt_subscribe_params *params = &my_lbs_c->button_char.indicate_params;
+
+        if (!my_lbs_c || !indicate_cb) {
+            return -EINVAL;
+        }
+
+        if (atomic_test_and_set_bit(&my_lbs_c->state, INDICATE_ENABLED)) {
+            LOG_INF("LBS-BUTTON characterisic indication already enabled.");
+            // return -EALREADY;
+        }
+
+        // Set the required GATT subscription parameters
+        my_lbs_c->button_char.indicate_cb = indicate_cb;
+        params->ccc_handle = my_lbs_c->button_char.ccc_handle;
+        params->value_handle = my_lbs_c->button_char.handle;
+        params->value= BT_GATT_CCC_INDICATE;
+        params->notify = my_lbs_button_indicate;
+
+        atomic_set_bit(params->flags, BT_GATT_SUBSCRIBE_FLAG_VOLATILE);
+
+        //subscribe to the characteristic
+        err = bt_gatt_subscribe(my_lbs_c->conn, params);
+        if (err) {
+            atomic_clear_bit(&my_lbs_c->state, INDICATE_ENABLED);
+            LOG_ERR("Subscribe to characteristic failed");
+        } else {
+            LOG_DBG("Subscribed to  LBS-BUTTON characteristic");
+        }
+
+        return err;
+    }
+    ```   
+
+    
+
 
 ## Demo Results 📡
 Now, build and flash the `demo_connect` application onto both boards. After a short time, BLEnd will connect the two devices automatically. The peripheral device will turn on LED1, while the central device will turn on LED4 to indicate their respective roles.   
