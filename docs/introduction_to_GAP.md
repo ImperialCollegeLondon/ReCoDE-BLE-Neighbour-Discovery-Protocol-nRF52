@@ -28,19 +28,10 @@ Zephyr OS is an open-source real-time operating system designed for resource-con
         * **Advertising**: Devices transmit advertising packets containing information like their name and service UUID(Universally Unique Identifier), making themselves discoverable. This is typically performed by **Peripheral** and **Broadcaster** roles.
         * **Scanning**: Devices listen for and parse advertising packets sent by other devices. This is a primary action for **Central** and **Observer** roles.
     * **Connection**: Once devices discover each other and aim to communicate, they establish and manage a connection. GAP handles the lifecycle of these connections. This primarily involves **Central** and **Peripheral** roles.
-    <!-- 
-        * **Pairing & Bonding**:
-            * **Pairing**: The process of establishing shared secret keys for secure communication.
-            * **Bonding**: Persisting the keys generated during pairing so that future secure connections can be established without re-pairing.
-    -->
+    
 * **Address Types**: Bluetooth devices use addresses to uniquely identify themselves. Common address types include:
     * **Public Address**: A globally unique IEEE EUI-48 address. It's predominantly associated with Classic Bluetooth, also known as BR/EDR (Basic Rate/Enhanced Data Rate) connections.
     * **Random Address**: Widely used in Bluetooth Low Energy (BLE) 
-    <!-- , random addresses can be:
-        * **Static Random Address**: Persists across device resets but differs from a public address.
-        * **Resolvable Private Address (RPA)**: A dynamic, frequently changing address that enhances privacy. It can be resolved to a device's real identity using a pre-shared Identity Resolving Key (IRK), making devices harder to track.
-        * **Non-Resolvable Private Address (NRPA)**: A randomly generated address that offers no resolution mechanism, ideal for scenarios where no tracking is desired.
-    -->
 
 ---
 
