@@ -13,6 +13,7 @@ include-markdown "../README.md"
 <!-- Add more files in the `docs/` directory for them to be automatically
 included in the Mkdocs documentation -->
 # BLE Advertising and Scanning: What You Need to Know
+
 This guide is all about getting you up to speed on the core concepts of BLE (Bluetooth Low Energy) advertising and scanning. This introduction is based on Lesson 2 of Nordic's excellent [BLE Fundamentals](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/) tutorial. If you've got some time and want to dive deeper into the underlying theory, we highly recommend checking out their full tutorial. But if you're short on time and just need the essentials to get going, you can simply breeze through this document—it'll give you a solid foundation!  
 
 **A Note on Device Roles**  
@@ -28,10 +29,12 @@ This guide is all about getting you up to speed on the core concepts of BLE (Blu
 ### Channels
 Bluetooth LE devices communicate through 40 different frequency channels. `Channel 37`, `Channel 38`, `Channel 39` are mainly used for advertisement purposes. Other channels are mainly used for data transfer after establishing a connection.
 
+
 ![BLE Channels](assets/BLE_background_1/channel.png)
 
 ### Advertising and Discovery Process
 **Definition of Terms**
+
 * **Advertising intervals**: The interval at which an advertising packet is sent. This can range from 20 ms to 10.24 s, with a step increase of 0.625 ms.
 
 * **Scan interval:** The interval at which a device scans for advertisement packets.
@@ -39,6 +42,7 @@ Bluetooth LE devices communicate through 40 different frequency channels. `Chann
 Both scan interval and scan window range from 2.5 ms to 10.24 seconds with a step increase of 0.625 ms.  
 
 **Process**  
+
 Since BLE operates in the crowded industrial, scientific, and medical radio band (ISM band), it has to share the airwaves with other technologies like Wi-Fi. This means there's always a risk of interference. On top of that, if two BLE devices try to send a signal on the same channel at the exact same time, they'll interfere with each other, making it hard for either message to get through.  
 To increase the chances that advertising packets will be received by other devices, BLE has a clever trick: it sends the same advertisement packet sequentially across all three primary advertising channels (channels 37, 38, and 39).   
 Simultaneously, a scanning device will scan these three channels to look for advertising devices. This redundancy significantly increases the likelihood that at least one of those packets will get through cleanly and be picked up by a scanning device.

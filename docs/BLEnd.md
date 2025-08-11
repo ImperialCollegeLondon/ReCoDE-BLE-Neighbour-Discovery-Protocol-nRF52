@@ -30,6 +30,7 @@ If you use BLEnd in your work, please cite:
 }
 ```
 ### 💻 Source Code
+
 > The original BLEnd source code is hosted on GitHub: [BLEnd_Nordic](https://github.com/UT-MPC/BLEnd_Nordic.git)
 
 ## 📖 BLEnd Protocol Overview
@@ -59,3 +60,4 @@ To ensure reliable neighbor detection, the active portion of the epoch, defined 
 
   ![U-BLEnd](assets/blend/ublend.png)  
   **Figure 1: U-BLEnd Epoch Structure.**
+
