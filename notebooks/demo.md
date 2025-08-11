@@ -225,11 +225,11 @@ After that, connect your development board to the computer via USB. The **nRF Co
 ![flash_succeeded](assets/demo/flash_succeeded.png)
 
 ### Observed Results from the Demo
-There are two main ways to observe the behavior of the running demo: LED indicators and the RTT terminal output.
+There are two main ways to observe the behavior of the running demo: LED indicators and the RTT (Real-Time Terminal) output.
 
 We assign LED1, LED2 and LED3 to indicate BLEnd running, scanning and advertising activity, respectively. When the device is actively advertising or scanning, the corresponding LED will turn on, providing a simple visual confirmation of the current state.
 
-In addition, the demo uses the Logger module, which prints messages to the terminal via RTT (Real-Time Terminal). This output provides more detailed runtime information, such as advertising/scanning events and received packets, making it easier to debug and understand the protocol flow.
+In addition, the demo uses the Logger module, which prints messages to the terminal via RTT. This output provides more detailed runtime information, such as advertising/scanning events and received packets, making it easier to debug and understand the protocol flow.
 
 #### LED indicators   
 The blinking LED1 indicate that the device is actively running the BLEnd protocol. 

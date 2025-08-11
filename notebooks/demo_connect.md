@@ -53,7 +53,7 @@ As in the previous demo, LED2 and LED3 are used to indicate the scanning and adv
 
 In the BLE GATT service, the peripheral functions as the **server**, while the central acts as the **client**.
 
-For the **central/client** device, **LED1** serves an additional purpose: it reflects the button state received from the server via indications. When a button pressed indication is received, LED1 turns on. When a button released message is received, LED1 turns off. This provides real-time, visible feedback that the central device is successfully receiving and interpreting the server's characteristic updates.
+For the **central/client** device, **LED1** serves an additional purpose: it reflects the button state received from the server via indications. When a "button pressed" indication is received, LED1 turns on. When a "button released" message is received, LED1 turns off. This provides real-time, visible feedback that the central device is successfully receiving and interpreting the server's characteristic updates.
 
 ## Server
 
@@ -61,7 +61,7 @@ The files `my_lbs.c` and `my_lbs.h` contain the code for the LBS server, adapted
 
 As a quick test, you can build and flash the server code onto a development board and interact with it using a mobile app (e.g., nRF Connect for Mobile). This allows you to verify that the Button Characteristic is functioning correctly before proceeding with full device-to-device interaction.
 
-To demonstrate the server functionality, you can use the nRF Connect for Mobile app  as the client.   
+To demonstrate the server functionality, you can use the nRF Connect for Mobile app as the client.   
 
 - Scan for nearby BLE devices in the app. Look for the device named `my_LBS`. Once found, connect to the device.    
     ![server1](assets/demo_connect/server1.png)  
@@ -76,6 +76,7 @@ To demonstrate the server functionality, you can use the nRF Connect for Mobile 
     ![server4](assets/demo_connect/server4.png)
 
 ## Client
+
 From the interaction between the server and the mobile app, we can clearly see the key responsibilities of a central device in this context:
 
 1. Scan for the target peripheral device and initiate a connection once the device is discovered.
@@ -87,6 +88,7 @@ From the interaction between the server and the mobile app, we can clearly see t
 These same steps will be implemented in the client-side firmware when setting up communication between two development boards.
 
 ### Initiate a connection
+
 - **Advertiser:**
     First, we configure the device to broadcast **connectable** advertisements instead of non-connectable beacons, allowing other devices to initiate a connection once discovered.   
 
@@ -109,7 +111,7 @@ These same steps will be implemented in the client-side firmware when setting up
         .connect_if_match = true,
         };
     ```
-- **Connection:**
+- **Connection:**    
     The functions and structures used for connection management are detailed in the documentation [Introduction to GAP](../docs/introduction_to_GAP.md).   
 
     In `main.c`, we declare a static pointer to hold the active connection. This variable is used throughout the application to track the current BLE connection and interact with the connected peer. We also register connection callbacks using a `bt_conn_cb` structure. These callbacks handle key connection events such as connection established, disconnected. Registering these callbacks allows the application to respond to connection state changes appropriately.
@@ -174,6 +176,7 @@ These same steps will be implemented in the client-side firmware when setting up
         }
         ```
 ###  Service Discovery
+
 We first define a discovery callback structure: `struct bt_gatt_dm_cb discovery_cb`. This structure contains three callback functions that will be triggered during the GATT discovery process: one when the target service is found, one when the service is not found, and one for handling errors. In these callbacks, we simply log the service discovery states: "Service found", "Service not found", or "Error while discovering GATT database" along with the corresponding error code.
 ```c
 static void discovery_complete(struct bt_gatt_dm *dm,
@@ -423,6 +426,6 @@ When you press **Button 1** on the **peripheral** board, LED1 on the central boa
 
 ![service_results2](assets/demo_connect/service_results2.png)
 
-We can also open the RTT terminals on both devices to observe more detailed logs. For example, if we reset one device, the other will log the disconnection reason 8 (The supervision timeout has expired). Then, both devices automatically start the BLEnd protocol. Once a neighbor is discovered, the scanner initiates a connection, performs service discovery, and starts receiving indications after the connection is established.  
+We can also open the RTT (Real-Time Terminal) on both devices to observe more detailed logs. For example, if we reset one device, the other will log the disconnection reason 8 (The supervision timeout has expired). Then, both devices automatically start the BLEnd protocol. Once a neighbor is discovered, the scanner initiates a connection, performs service discovery, and starts receiving indications after the connection is established.  
 
 ![RTT_service](assets/demo_connect/RTT_service.png)

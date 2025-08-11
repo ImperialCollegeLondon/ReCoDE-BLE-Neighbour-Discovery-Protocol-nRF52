@@ -7,6 +7,7 @@ Think of a `k_timer` as a programmable alarm clock within your embedded system. 
 Here, we'll cover the fundamental steps for using timers in Zephyr. For a more in-depth understanding and advanced configurations, please refer to the [Timer APIs](https://docs.nordicsemi.com/bundle/ncs-2.5.0/page/zephyr/kernel/services/timing/timers.html). 
 
 ## Timer Expiry Function
+
 This function is the heart of your timer's functionality. It's a special callback function that Zephyr's kernel automatically executes when a specific timer finishes counting down or "expires."    
 
 For example:  
@@ -18,6 +19,7 @@ For example:
   ```
 
 ## Define and Initialize a Timer.
+
 The `K_TIMER_DEFINE()` macro in Zephyr is a powerful tool for statically defining and initializing a kernel timer.  
   ```c
     K_TIMER_DEFINE(name, expiry_fn, stop_fn)
@@ -30,6 +32,7 @@ The `K_TIMER_DEFINE()` macro in Zephyr is a powerful tool for statically definin
 
 
 ## Start the Timer 
+
 This function starts a timer, and resets its status to zero. The timer begins counting down using the specified duration and period values.
     ```c
     void k_timer_start(struct k_timer *timer, k_timeout_t duration, k_timeout_t period)

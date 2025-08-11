@@ -13,9 +13,7 @@ include-markdown "../README.md"
 <!-- Add more files in the `docs/` directory for them to be automatically
 included in the Mkdocs documentation -->
 # Introduction to Zephyr API: Generic Access Profile (GAP)
-In Zephyr OS, the `zephyr/bluetooth/gap.h` header file provides the essential APIs applications need to interact with the **Bluetooth Generic Access Profile (GAP)**. GAP defines how Bluetooth devices discover each other, connect, and communicate in a secure manner. Understanding this header is crucial for developing any Zephyr-based Bluetooth application.
-
----
+Zephyr OS is an open-source real-time operating system designed for resource-constrained devices. In Zephyr, the `zephyr/bluetooth/gap.h` header file provides the essential Application Programming Interfaces (APIs) that applications use to interact with the **Bluetooth Generic Access Profile (GAP)**. GAP defines how Bluetooth devices discover each other, connect, and communicate in a secure manner. Understanding this header is crucial for developing any Zephyr-based Bluetooth application.
 
 ## Core Concepts
 
@@ -97,7 +95,7 @@ The functions described below are central to implementing BLE advertising in you
     We can use the helper maco BT_LE_ADV_PARAM() to initialize an instance of the bt_le_adv_param structure:
     ![BT_LE_ADV_PARAM](assets/GAP/BT_LE_ADV_PARAM.png)
     - **Advertising options**: 
-        Specific macros to configure the advertising options. These options are a set of configuration bits that control the behavior of the advertising process.
+        Specific macros are used to configure advertising options. These options consist of configuration bits that control the behavior of the advertising process.
         For example:
         - BT_LE_ADV_OPT_NONE: 	simply means "don't auto-configure any behavior" — but it doesn't prevent you from manually adding things like the name.
         - BT_LE_ADV_OPT_CONNECTABLE: lets other devices connect to you.
@@ -147,7 +145,7 @@ The functions described below are central to implementing BLE advertising in you
         ```
 #### **Functions**
 - **bt_le_adv_start**:  
-    In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using Bluetooth Low Energy (LE) advertising. This function sets advertisement parameters, advertisement data, scan response data and start advertising.  
+    In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using BLE advertising. This function sets advertisement parameters, advertisement data, scan response data and start advertising.  
     ```c
     int bt_le_adv_start	(	const struct bt_le_adv_param *	param,
                         const struct bt_data *	ad,     //Data to be used in advertisement packets.
