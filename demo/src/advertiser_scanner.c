@@ -68,14 +68,13 @@ static struct bt_scan_manufacturer_data mfg_filter = {
     .data = (uint8_t *)&adv_mfg_data,
     .data_len = sizeof(adv_mfg_data),
 };
+
 /**
  * @brief Starts the advertising process
  *
  * @param *work Workqueue thread for starting advertising
  */
-
 static void adv_work_handler(struct k_work *work)
-
 {
     int err_start;
     // adv date: ad, no scan response data
@@ -171,8 +170,6 @@ static int scan_start(void)
         return err;
     }
 
-	
-
 	err = bt_scan_start(BT_SCAN_TYPE_SCAN_PASSIVE);
 	if (err) {
 		LOG_ERR("Scanning failed to start (err %d)", err);
@@ -182,6 +179,7 @@ static int scan_start(void)
 	LOG_INF("Scan started");
 	return 0;
 }
+
 /**
  * @brief Starts the scanning process
  *

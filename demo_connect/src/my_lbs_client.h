@@ -92,6 +92,7 @@ int my_lbs_client_init(struct my_lbs_client *my_lbs_c);
 int my_lbs_client_button_subscribe(struct  my_lbs_client *my_lbs_c,
 					my_lbs_client_indicate_cb indicate_cb);
 
+					
 /**
  * @brief Unsubscribe from the LBS-BUTTON characteristic.
  *

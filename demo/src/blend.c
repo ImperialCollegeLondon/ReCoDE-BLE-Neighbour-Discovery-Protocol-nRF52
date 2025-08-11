@@ -81,6 +81,7 @@ void blend_init(int epoch_duration, int adv_interval)
     adv_duration = adv_interval_count * (adv_interval * 0.625 +5) + 15 ; // 15 ms for the last beacon's transmission 
     LOG_INF("BLEnd init: epoch_period %d ms, adv_duration %d ms, scan_duration %d ms", epoch_period, adv_duration, scan_duration);
 }
+
 /**
  * @brief Starts the BLEnd module
  *
@@ -88,6 +89,6 @@ void blend_init(int epoch_duration, int adv_interval)
  */
 void blend_start(void)
 {
-        k_timer_start(&epoch_timer, K_NO_WAIT, K_MSEC(epoch_period));
-        LOG_INF("BLEnd start");
+    k_timer_start(&epoch_timer, K_NO_WAIT, K_MSEC(epoch_period));
+    LOG_INF("BLEnd start");
 }

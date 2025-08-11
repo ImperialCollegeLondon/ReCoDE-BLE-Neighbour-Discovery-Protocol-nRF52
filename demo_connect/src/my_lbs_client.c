@@ -215,7 +215,9 @@ int my_lbs_client_handles_assign(struct bt_gatt_dm *dm, struct my_lbs_client *my
 	return 0;
 }
 
-
+/*
+ * @brief Initialize the LBS client.	
+*/
 int my_lbs_client_init(struct my_lbs_client *my_lbs_c)
 {
 	if (!my_lbs_c) {
