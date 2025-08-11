@@ -1,5 +1,5 @@
 
-#  What is BLEnd? Theoretical Foundations and Demo Implementation
+#  What is BLEnd? Theoretical Foundations
 
 > **Note:** If you're completely new to BLE, please first read the document [BLE Advertising and Scanning: What You Need to Know](BLE_background_1.md) to ensure a clear understanding of the BLE scanning, advertising, and discovery process.
 
