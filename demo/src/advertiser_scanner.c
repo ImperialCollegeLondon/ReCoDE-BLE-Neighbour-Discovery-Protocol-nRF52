@@ -104,6 +104,13 @@ static void adv_stop_handler(struct k_work *work)
     }
 	dk_set_led(ADVERTISE_LED, 0); // turn off the advertising LED
 }
+
+/** 
+ * @brief  Initializes the advertising parameters and sets up the work (starting and stopping advertising)
+ * @param  adv_interval  Advertising interval in units of 0.625 milliseconds.
+ *          This value is passed from main and can be set by the user to different values.
+ *
+ */
 void adv_init(int adv_interval)
 {
     adv_param->interval_max =adv_interval;
