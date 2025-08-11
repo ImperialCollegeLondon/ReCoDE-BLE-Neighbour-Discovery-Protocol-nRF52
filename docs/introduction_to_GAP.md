@@ -219,7 +219,7 @@ This step covers functions essential for setting up the scanner and defining its
         - ``struct bt_scan_cb *cb``  
             A pointer to a structure containing the function pointers for your application's scanning callbacks.   
             The `BT_SCAN_CB_INIT` macro is a convenient way to initialize a `struct bt_scan_cb` instance with your specific callback functions. It streamlines the process by setting up the structure with the provided function pointers.
-                ![BT_SCAN_CB_INIT](assets\GAP\BT_SCAN_CB_INIT.png) 
+                ![BT_SCAN_CB_INIT](assets/GAP/BT_SCAN_CB_INIT.png) 
 #### **Scan Filtering**   
 Before starting the actual scan, you'll typically want to define what kind of advertisement packets you're interested in. Functions in this category allow you to add, remove, and manage filters, ensuring your application only processes relevant scan reports.
 - **bt_scan_filter_add**   
@@ -279,7 +279,7 @@ This step manages the active state of the scanner. This includes starting the sc
     ```
 ### 4. Connection
 Upon receiving a connectable advertisement, the scanner can decide to send a connection request packet back to the advertiser. This packet contains information necessary for establishing the connection, such as the scanner's address and desired connection parameters. If the advertiser accepts the connection request, a direct, point-to-point connection is established between the two devices. This transition marks a significant shift from the broadcast-based advertising phase to a communication link. Once a connection is established, both the **Central** and the **Peripheral** device have the capability to disconnect from the link.   
-        ![conn_request](assets\GAP\conn_request.png)    
+        ![conn_request](assets/GAP/conn_request.png)    
 Just as `scan.h` and `scan.c` form a scanner module, a separate `conn.h` and `conn.c` module is used to provide the core functions and definitions necessary for managing a BLE connection. You can find detailed information about the scanner module in its official documentation: [Connection Management](https://docs.zephyrproject.org/apidoc/latest/group__bt__conn.html)
 
 ```c
