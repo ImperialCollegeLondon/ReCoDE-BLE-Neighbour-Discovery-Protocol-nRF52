@@ -20,6 +20,7 @@ throughout the development and plan accordingly.
 # ReCoDE-A-BLE(Bluetooth Low Energy)-neighbor-discovery-protocol-on-nRF52
 
 <!-- A brief description of your exemplar, which may include an image -->
+
 This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data. 
 
 Although Nordic provides a BLE tutorial course, the official examples typically demonstrate a device in the **Peripheral** role (GAP, Generic Access Profile) or **Server** role (GATT, Generic Attribute Profile) interacting with a mobile app. This exemplar goes further by walking through the **Central** and **Client** as well, enabling your devices to interact directly with each other.
