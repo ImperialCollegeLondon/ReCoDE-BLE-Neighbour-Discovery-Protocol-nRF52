@@ -17,15 +17,18 @@ throughout the development and plan accordingly.
 
 
 <!-- Your exemplar title. Make it sound catchy! -->
-# ReCoDE-A-BLE-neighbor-discovery-protocol-on-nRF52
+# ReCoDE-A-BLE(Bluetooth Low Energy)-neighbor-discovery-protocol-on-nRF52
 
 <!-- A brief description of your exemplar, which may include an image -->
-This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional or bidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data.
+
+This exemplar demonstrates the implementation of a BLE neighbor discovery protocol on the nRF52 platform using nRF Connect for VS Code. Each device alternates between advertising and scanning according to a scheduled time pattern, enabling unidirectional neighbor discovery. Once a peer is discovered, the device initiates a connection and uses a custom BLE service to exchange data. 
+
+Although Nordic provides a BLE tutorial course, the official examples typically demonstrate a device in the **Peripheral** role (GAP, Generic Access Profile) or **Server** role (GATT, Generic Attribute Profile) interacting with a mobile app. This exemplar goes further by walking through the **Central** and **Client** as well, enabling your devices to interact directly with each other.
 
 <!-- Author information -->
 This exemplar was developed at Imperial College London by Sabrina Wang in
-collaboration with (RSE MENTOR) from Research Software Engineering and
-(RCDS MENTOR) from Research Computing & Data Science at the Early Career
+collaboration with Jay DesLauriers from Research Software Engineering and
+Dan Cummins from Research Computing & Data Science at the Early Career
 Researcher Institute.
 
 
@@ -46,7 +49,7 @@ After completing this exemplar, students will:
 
 * Graduate and undergraduate students new to BLE technology who need practical experience for their research or projects.
 
-* Students seeking a hands-on introduction to BLE neighbor discovery and connection protocols.
+* Students seeking a hands-on introduction to BLE neighbor discovery protocols and GATT services.
 
 * Learners interested in wireless communication and low-power device design using nRF52 platforms.
 
@@ -72,8 +75,6 @@ you must include a relevant section that helps with learning this library.
 
 ### System 💻
 
-- System requirements (e.g. Python 3.11+, Anaconda, 50 GB disk space, etc.)
-- Hardware or HPC requirements (if any)
 - A Nordic BLE development board (e.g. nRF52832 DK or nRF52840 DK).
 
 - A USB cable for programming and serial communication.
@@ -87,26 +88,17 @@ you must include a relevant section that helps with learning this library.
 <!-- Quick Start Guide. Tell learners how to engage with the exemplar. -->
 ## Getting Started 🚀
 
-e.g. Step-by-step guide:
+1. Before diving into this exemplar, it’s important to ensure your development environment is properly set up. We highly recommend starting with [Lesson 1, Exercise 1](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/lessons/lesson-1-nrf-connect-sdk-introduction/topic/exercise-1-1/) from Nordic Semiconductor’s official nRF Connect SDK Fundamentals tutorial. This exercise will guide you step-by-step through installing the essential development tools and configuring your environment for success.
 
-1. Start by (instruction).
-2. Visit the sections of this notebook in some particular order.
-3. Attempt exercises `1a`, `1b`, etc.
-4. Progress to advanced materials in the Github repository linked here.
-5. Compare with solutions available in the `solutions` folder.
+2. Once you’re comfortable with that, take a moment to complete [Exercise 2](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/lessons/lesson-1-nrf-connect-sdk-introduction/topic/exercise-2-1/). It offers practical experience in building and flashing applications onto your development board using the nRF Connect SDK. If you’re new to Nordic’s workflow, this exercise will be especially valuable in helping you become familiar with compiling firmware and programming your device smoothly.
 
+3. The [Notebook: demo](notebooks/demo.md) notebook walks you through the beginner-level example in the `demo` folder step by step:
+    - Learn the theory: It first refers to the [What is BLEnd? Theoretical Foundations](docs/BLEnd.md) and [BLE Advertising and Scanning: What You Need to Know](docs/BLE_background_1.md) documents in the `docs` folder to introduce the basics of BLE and the BLEnd protocol.   
+    - Understand the code: Next, it uses the [How to Use a Timer](docs/introduction_to_Ktimer.md) and [Introduction to GAP](docs/introduction_to_GAP.md). document to explain how the example code interacts with the official BLE API (Application Programming Interface).   
+    - See the results: Finally, it presents the observed output so you can compare your own results with the expected behavior. In this stage, you should see your devices scanning and advertising, allowing them to discover nearby devices.  
 
-<!-- Background. Tell learners about why this exemplar is useful. -->
-## Disciplinary Background 🔬
-     
-Briefly describe how this project fits in your discipline, why you chose
-to work on it, and what other disciplines may find it useful.
+4. The `demo_connect` example is designed as a challenge exercise, encouraging more self-directed learning. It builds on the basics from the `demo` example and introduces additional concepts, such as creating and using a customized GATT service after establishing a connection. The [Notebook: demo_connect](notebooks/demo_connect.md) notebook provides learning resources, service explanation and observed results.
 
-
-<!-- Software. What languages, libraries, software you use. -->
-## Software Tools 🛠️
-
-Programming language(s), libraries, and scientific software used.
 
 
 <!-- Repository structure. Explain how your code is structured. -->
@@ -116,118 +108,63 @@ Overview of code organisation and structure.
 
 ```
 .
-├── notebooks
-│ ├── ex1.ipynb
-├── src
-│ ├── file1.py
-│ ├── file2.cpp
-│ ├── ...
-│ └── data
+├── demo
+│ ├── src
+│ │ ├── advertiser_scanner.c
+│ │ ├── advertiser_scanner.h
+│ │ ├── blend.c
+│ │ ├── blend.h
+│ │ ├── main.c
+│ ├── CMakeLists.txt
+│ ├── prj.conf
+├── demo_connect
+│ ├── src
+│ │ ├── advertiser_scanner.c
+│ │ ├── advertiser_scanner.h
+│ │ ├── blend.c
+│ │ ├── blend.h
+│ │ ├── main.c
+│ │ ├── my_lbs.c
+│ │ ├── my_lbs.h
+│ │ ├── my_lbs_client.c
+│ │ ├── my_lbs_client.h
+│ ├── CMakeLists.txt
+│ ├── prj.conf
 ├── docs
-└── test
+│ ├── BLE_background_1.md
+│ ├── BLEnd.md
+│ ├── introduction_to_GAP.md
+│ ├── introduction_to_Ktimer.md
+├── notebooks
+│ ├── demo.md
+│ ├── demo_connect.md
+├── docs
+│ ├── BLE_background_1.md
+│ ├── BLEnd.md
+│ ├── introduction_to_GAP.md
+│ ├── introduction_to_Ktimer.md
+└──  README.md
 ```
 
 Code is organised into logical components:
-
-- `notebooks` for tutorials and exercises
-- `src` for core code, potentially divided into further modules
-- `data` within `src` for datasets
+- `demo` for beginner-level code, potentially divided into further modules
+- `demo_connect` for challenge code, potentially divided into further modules
 - `docs` for documentation
-- `test` for testing scripts
+- `notebooks` for tutorials and exercises
 
-
-<!-- Roadmap.
-Identify the project core (a minimal working example). This
-is what you should develop first, ideally by week 6. Defining
-a core helps ensure that, despite a tight timeline, we will end
-up with a complete project.
-
-Identify project extensions. These are additional features that
-you will implement after the core of the project is finished; you
-could also propose extensions as open-ended exercises for the ReCoDE
-audience.
-
-Outline the process of creating the exemplar as a project roadmap
-with individual steps. This will help you with defining the scope of 
-the project. When you think about this, imagine that you are explaining
-it to a new PhD student. Assume that this student is from a related (but
-not necessarily same) discipline. They can code but have never undertaken
-a larger project. The steps should follow logical development of the
-project and good practice. Each will be relatively independent and contain
-its own learning annotation and links to other learning materials if
-appropriate. The learning annotation is going to form a significant portion
-of your efforts.
-
-Learning annotations will evolve as we go along but planning now will be useful
-in defining your exemplar steps. Remember that active learning is generally more
-valuable than just reading information, so small exercises that build on previous
-steps can really help your students to understand the software development process.
-You can include videos, text, charts, images, flowcharts, storyboards, or anything
-creative that you may think of.
-
-Completed tasks are marked with an x between the square brackets.
--->
-## Roadmap 🗺️
-
-### Core 🧩
-
-- [x] Data ingestion pipeline
-    * [x] Tutorial with small data exercise
-- [x] Core analysis algorithms
-    * [x] Documentation with worked example
-- [ ] Basic visualisation tools
-    * [ ] Mini-project: "Create your first plot"
-- [ ] Results export functionality
-    * [ ] Usage tutorial with export task
-    * [ ] Short video walkthrough *(planned)*
-- [ ] Automated testing suite
-    * [ ] Debugging challenge
-- [ ] Documentation for core methods
-
-### Extensions 🔌
-
-- [ ] Advanced statistical models
-    * [ ] Example notebook with exercises
-- [ ] Interactive dashboard
-    * [ ] Exercise: Build a simple component
-- [ ] Multi-format data import/export
-    * [ ] Guide with hands-on tasks
-- [ ] Collaboration tools integration
-    * [ ] Exercise: Set up collaborative workflow
-    * [ ] Include diagram of workflow *(optional)*
-- [ ] Extended visualisation options
-    * [ ] Creative task: Design a custom plot
-
-<!-- Data availability (remove this section if no data used) -->
-## Data 📊
-
-List datasets used with:
-
-- Licensing info
-- Where they are included (in the repo or external links)
-
-
-<!-- Best practice notes. -->
-## Best Practice Notes 📝
-
-- Code testing and/or test examples
-- Use of continuous integration (if any)
-- Any other software development best practices
-
-<!-- Estimate the time it will take for a learner to progress through the exemplar. -->
 ## Estimated Time ⏳
 
 | Task       | Time    |
 | ---------- | ------- |
-| Reading    | 3 hours |
-| Practising | 3 hours |
+| Reading    | 4 hours |
+| Practising | 2 hours |
 
 
 <!-- Any references, or other resources. -->
 ## Additional Resources 🔗
 
-- Relevant sources, websites, images, AOB.
-
+- [nRF Connect SDK Fundamentals](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/)
+- [Bluetooth Low Energy Fundamentals](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/)
 <!-- LICENCE.
 Imperial prefers BSD-3. Please update the LICENSE.md file with the current year.
 -->
