@@ -138,11 +138,6 @@ Overview of code organisation and structure.
 ├── notebooks
 │ ├── demo.md
 │ ├── demo_connect.md
-├── docs
-│ ├── BLE_background_1.md
-│ ├── BLEnd.md
-│ ├── introduction_to_GAP.md
-│ ├── introduction_to_Ktimer.md
 └──  README.md
 ```
 
