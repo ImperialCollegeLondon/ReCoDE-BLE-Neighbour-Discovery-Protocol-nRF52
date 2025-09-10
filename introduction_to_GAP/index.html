@@ -1,0 +1,1271 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../introduction_to_Ktimer/">
+      
+      
+        <link rel="next" href="../demo/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Intro to GAP - A BLE Neighbour Discovery Protocol on nRF52</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#introduction-to-zephyr-api-generic-access-profile-gap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-header__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A BLE Neighbour Discovery Protocol on nRF52
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Intro to GAP
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-nav__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    A BLE Neighbour Discovery Protocol on nRF52
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Background
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BLEnd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to BLEnd
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BLE_Background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BLE Background
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction_to_Ktimer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using a Timer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Intro to GAP
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to GAP
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Concepts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-api-functions-from-zephyrbluetoothgaph-and-related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key API Functions (from zephyr/bluetooth/gap.h and related)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key API Functions (from zephyr/bluetooth/gap.h and related)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-initializing-the-bluetooth-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Initializing the Bluetooth Stack
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configuring-advertisement" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Configuring Advertisement
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Configuring Advertisement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Structures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-scanner-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Scanner module
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Scanner module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initialization and Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scan Filtering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scan Control
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Connection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-connection-instance-and-callback-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Connection Instance and Callback Functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-functions-for-active-ble-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functions for Active BLE Connections
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-disconnection-in-ble" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Disconnection in BLE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First Demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo_connect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Second Demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Concepts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-api-functions-from-zephyrbluetoothgaph-and-related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key API Functions (from zephyr/bluetooth/gap.h and related)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key API Functions (from zephyr/bluetooth/gap.h and related)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-initializing-the-bluetooth-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Initializing the Bluetooth Stack
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configuring-advertisement" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Configuring Advertisement
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Configuring Advertisement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Structures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-scanner-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Scanner module
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Scanner module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initialization and Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scan Filtering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scan Control
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Connection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-connection-instance-and-callback-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Connection Instance and Callback Functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-functions-for-active-ble-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functions for Active BLE Connections
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-disconnection-in-ble" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Disconnection in BLE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!--
+This includes your top-level README as you index page i.e. homepage.
+
+This will not be the best approach for all exemplars, so feel free to customise
+your index page as you see fit.
+-->
+
+<!-- Add more files in the `docs/` directory for them to be automatically
+included in the Mkdocs documentation -->
+<h1 id="introduction-to-zephyr-api-generic-access-profile-gap">Introduction to Zephyr API: Generic Access Profile (GAP)</h1>
+<p>Zephyr OS is an open-source real-time operating system designed for resource-constrained devices. In Zephyr, the <code>zephyr/bluetooth/gap.h</code> header file provides the essential Application Programming Interfaces (APIs) that applications use to interact with the <strong>Bluetooth Generic Access Profile (GAP)</strong>. GAP defines how Bluetooth devices discover each other, connect, and communicate in a secure manner. Understanding this header is crucial for developing any Zephyr-based Bluetooth application.</p>
+<h2 id="core-concepts">Core Concepts</h2>
+<ul>
+<li>
+<p><strong>Roles</strong>: Bluetooth GAP defines various roles a device can assume, primarily including:</p>
+<ul>
+<li><strong>Broadcaster</strong>: A device that only sends advertising data (e.g., a beacon).</li>
+<li><strong>Observer</strong>: A device that only scans for advertising data.</li>
+<li><strong>Central</strong>: A device that scans for and connects to peripheral devices (e.g., a smartphone connecting to Bluetooth headphones).</li>
+<li><strong>Peripheral</strong>: A device that can be connected to by a central device (e.g., Bluetooth headphones).</li>
+</ul>
+</li>
+<li>
+<p><strong>Operations &amp; Device Interactions</strong></p>
+<ul>
+<li><strong>Advertising &amp; Scanning</strong>:<ul>
+<li><strong>Advertising</strong>: Devices transmit advertising packets containing information like their name and service UUID(Universally Unique Identifier), making themselves discoverable. This is typically performed by <strong>Peripheral</strong> and <strong>Broadcaster</strong> roles.</li>
+<li><strong>Scanning</strong>: Devices listen for and parse advertising packets sent by other devices. This is a primary action for <strong>Central</strong> and <strong>Observer</strong> roles.</li>
+</ul>
+</li>
+<li><strong>Connection</strong>: Once devices discover each other and aim to communicate, they establish and manage a connection. GAP handles the lifecycle of these connections. This primarily involves <strong>Central</strong> and <strong>Peripheral</strong> roles.</li>
+</ul>
+</li>
+<li>
+<p><strong>Address Types</strong>: Bluetooth devices use addresses to uniquely identify themselves. Common address types include:</p>
+<ul>
+<li><strong>Public Address</strong>: A globally unique IEEE EUI-48 address. It's predominantly associated with Classic Bluetooth, also known as BR/EDR (Basic Rate/Enhanced Data Rate) connections.</li>
+<li><strong>Random Address</strong>: Widely used in Bluetooth Low Energy (BLE) </li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="key-api-functions-from-zephyrbluetoothgaph-and-related">Key API Functions (from <code>zephyr/bluetooth/gap.h</code> and related)</h2>
+<p>While <code>zephyr/bluetooth/gap.h</code> serves as the foundational header for the GAP, defining its core structures, roles, and macros, the functional APIs for specific GAP operations. Actual GAP operations are often performed by combining APIs from <code>bluetooth/bluetooth.h</code> and are often modularized into dedicated headers. For instance, <code>scan.h</code> provides functions for device discovery, and <code>conn.h</code> handles active connection management, both building upon the underlying GAP definitions established in gap.h.  <br />
+<strong>Usful links</strong>:<br />
+Nordic: https://docs.nordicsemi.com/bundle/zephyr-apis-latest/page/group_bt_gap.html<br />
+Zephyr: https://docs.zephyrproject.org/apidoc/latest/group__bt__gap.html</p>
+<p>Here are some common GAP-related operations you'll frequently encounter in Zephyr Bluetooth development:  </p>
+<h3 id="1-initializing-the-bluetooth-stack">1. Initializing the Bluetooth Stack</h3>
+<p><div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">bt_enable</span><span class="w">   </span><span class="p">(</span><span class="w">   </span><span class="n">bt_ready_cb_t</span><span class="w">   </span><span class="n">cb</span><span class="w">  </span><span class="p">)</span><span class="w">   </span>
+</code></pre></div>
+The bt_enable() function is the essential starting point for any Bluetooth application in Zephyr. You must call this function before attempting any other Bluetooth operations that require communication with the local Bluetooth hardware.
+* <strong>Parameters</strong><br />
+<strong>cb</strong>:<br />
+    Give it a <strong>callback</strong> function: Your program continues running, and Zephyr tells that function when Bluetooth is ready. This is what we call asynchronous operation – tasks happening in the background without blocking your main program flow.<br />
+    Give it <strong>NULL</strong>: Your program pauses and waits until Bluetooth is ready before moving on. This is a synchronous operation. </p>
+<ul>
+<li><strong>Returns</strong>
+Zero on success or (negative) error code otherwise.</li>
+<li><strong>Example</strong>
+    <div class="highlight"><pre><span></span><code><span class="c1"># in prj.conf file</span>
+<span class="c1"># Logger module</span>
+<span class="na">CONFIG_LOG</span><span class="o">=</span><span class="s">y</span>
+<span class="c1">#  Include the Bluetooth LE stack in your project</span>
+<span class="na">CONFIG_BT</span><span class="o">=</span><span class="s">y</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="cp"># in .c file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/bluetooth.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/gap.h&gt;</span><span class="c1"> </span>
+<span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/* Enable the Bluetooth LE stack */</span>
+<span class="w">    </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_enable</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Bluetooth init failed (err %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// Handle error appropriately</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Bluetooth initialized</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</code></pre></div></li>
+</ul>
+<h3 id="2-configuring-advertisement">2. Configuring Advertisement</h3>
+<p>The functions described below are central to implementing BLE advertising in your applications. Before diving into their specifics, we strongly recommend you first read our <a href="../BLE_Background/">BLE Advertising and Scanning: What You Need to Know</a> document. This will give you the essential foundational knowledge of how BLE advertising works, which is crucial for understanding these functions.</p>
+<h4 id="related-structures"><strong>Related Structures</strong></h4>
+<ul>
+<li><strong>struct bt_le_adv_param</strong>: specifies what fields (variables) are needed to describe Bluetooth Low Energy (LE) advertising parameters.
+    We can use the helper maco BT_LE_ADV_PARAM() to initialize an instance of the bt_le_adv_param structure:
+    <img alt="BT_LE_ADV_PARAM" src="../assets/GAP/BT_LE_ADV_PARAM.png" /><ul>
+<li><strong>Advertising options</strong>: 
+    Specific macros are used to configure advertising options. These options consist of configuration bits that control the behavior of the advertising process.
+    For example:<ul>
+<li>BT_LE_ADV_OPT_NONE:   simply means "don't auto-configure any behavior" — but it doesn't prevent you from manually adding things like the name.</li>
+<li>BT_LE_ADV_OPT_CONNECTABLE: lets other devices connect to you.</li>
+<li>BT_LE_ADV_OPT_USE_NAME: includes the device name in the advertising data.</li>
+</ul>
+</li>
+<li><strong>Advertising interval</strong>:<ul>
+<li><strong>Minimum advertising interval</strong>:  is calculated as N×0.625 milliseconds and must be less than or equal to the maximum advertising interval.</li>
+<li><strong>Maximum advertising interval</strong>:   is also calculated as N×0.625 milliseconds and must be greater than or equal to the minimum advertising interval.   </li>
+<li>For both the minimum and maximum intervals, the value of N must fall between 32 and 16384. This means the advertising interval can range from 20 milliseconds to 10.24 seconds. The API provides convenient, ready-to-use options, rather than forcing you to always manually calculate and input the raw numerical value of 'N'.</li>
+<li>the actual advertising interval used by the BLE device will be a random value chosen by the BLE controller within that specified range (Min to Max), plus a small random delay. Some advanced BLE stacks or applications might even dynamically adjust the advertising interval within the min/max range.  </li>
+</ul>
+</li>
+<li><strong>Peer address</strong>: Included if directed advertising is used. Otherwise, set to NULL.   </li>
+</ul>
+</li>
+<li><strong>struct bt_data</strong>:Description of different data types that can be encoded into advertising data. <ul>
+<li>Populate the flags using the helper macro <strong>BT_DATA_BYTES()</strong>.
+    <img alt="BT_DATA_BYTES" src="../assets/GAP/BT_DATA_BYTES.png" /><br />
+    The Flags byte is a bitmask, meaning each bit represents a distinct piece of information. To set multiple flags, you combine their individual bit values using the bitwise OR operator (|).<br />
+    Example:
+    <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/bluetooth.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/gap.h&gt;</span>
+<span class="cm">/* Set the advertising flags */</span>
+<span class="n">BT_DATA_BYTES</span><span class="p">(</span><span class="n">BT_DATA_FLAGS</span><span class="p">,</span><span class="w"> </span><span class="n">BT_LE_AD_NO_BREDR</span><span class="o">|</span><span class="n">BT_LE_AD_GENERAL</span><span class="p">),</span><span class="w"> </span><span class="c1">// no BR/EDR support , General Discoverable</span>
+</code></pre></div></li>
+<li>Set the advertising packet data using the helper macro BT_DATA()
+    <img alt="BT_DATA" src="../assets/GAP/BT_DATA.png" />  <ul>
+<li>Declare the Manufacturer Specific Data:<br />
+    Manufacturer Specific Data is used to create and include custom data in Bluetooth LE advertising. The data to be included can be in any format suitable for your use case/application. <br />
+    The first two bytes in the Manufacturer Specific Data are the company identifier as registered in Bluetooth SIG in the Assigned Numbers Document. For educational/testing purposes, we will use Nordic Semiconductor Company Identifier.  </li>
+</ul>
+</li>
+<li>Example:
+    <div class="highlight"><pre><span></span><code><span class="cm">/* Declare the Company identifier (Company ID) */</span>
+<span class="cp">#define COMPANY_ID_CODE 0x0059      </span><span class="c1">// Nordic Semiconductor Company Identifier.</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">adv_mfg_data</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">company_code</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Company Identifier Code. */</span>
+<span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">custom_data</span><span class="p">;</span><span class="w"> </span><span class="cm">/* custom data */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">adv_mfg_data_type</span><span class="p">;</span>
+
+<span class="cm">/* Define and initialize a variable of type adv_mfg_data_type */</span>
+<span class="k">static</span><span class="w"> </span><span class="n">adv_mfg_data_type</span><span class="w"> </span><span class="n">adv_mfg_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">COMPANY_ID_CODE</span><span class="p">,</span><span class="w"> </span><span class="mh">0x0000</span><span class="w"> </span><span class="p">};</span>
+
+<span class="cm">/* Declare the advertising packet */</span>
+<span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_data</span><span class="w"> </span><span class="n">ad</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="cm">/* Set the advertising flags */</span>
+<span class="n">BT_DATA_BYTES</span><span class="p">(</span><span class="n">BT_DATA_FLAGS</span><span class="p">,</span><span class="w"> </span><span class="n">BT_LE_AD_NO_BREDR</span><span class="p">),</span><span class="w"> </span><span class="c1">// no BR/EDR support</span>
+<span class="cm">/* Set the advertising packet data:  manufacturer data */</span>
+<span class="n">BT_DATA</span><span class="p">(</span><span class="n">BT_DATA_MANUFACTURER_DATA</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">adv_mfg_data</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">adv_mfg_data</span><span class="p">)),</span><span class="w">   </span>
+<span class="p">};</span>
+</code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h4 id="functions"><strong>Functions</strong></h4>
+<ul>
+<li><strong>bt_le_adv_start</strong>:<br />
+    In Zephyr, once your Bluetooth stack is initialized (with bt_enable()), the bt_le_adv_start() function is your primary tool for making your device discoverable to others using BLE advertising. This function sets advertisement parameters, advertisement data, scan response data and start advertising.<br />
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">bt_le_adv_start</span><span class="w"> </span><span class="p">(</span><span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_le_adv_param</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">param</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_data</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">ad</span><span class="p">,</span><span class="w">     </span><span class="c1">//Data to be used in advertisement packets.</span>
+<span class="w">                    </span><span class="kt">size_t</span><span class="w">  </span><span class="n">ad_len</span><span class="p">,</span><span class="w">                 </span><span class="c1">//Number of elements in ad</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_data</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">sd</span><span class="p">,</span><span class="w">     </span><span class="c1">//Data to be used in scan response packets.</span>
+<span class="w">                    </span><span class="kt">size_t</span><span class="w">  </span><span class="n">sd_len</span><span class="w"> </span><span class="p">)</span><span class="w">                </span><span class="c1">//Number of elements in sd</span>
+</code></pre></div><ul>
+<li><code>size_t   ad_len or sd_len</code>:<br />
+    In programming APIs for BLE, you often define your advertising data as an array or list of these individual AD elements. The "number of elements in ad" would then be the size of that array/list.<br />
+    An advertising packet might contain:<br />
+        Element 1: Flags (BT_LE_AD_NO_BREDR)<br />
+        Element 2: Complete Local Name ("My Sensor Device")<br />
+        Element 3: List of 16-bit Service UUIDs (e.g., for a Heart Rate Service)  </li>
+<li><strong>Returns</strong> 
+    Zero on success or (negative) error code otherwise.</li>
+<li>Example()
+    <div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">* This example snippet demonstrates BLE advertising setup.</span>
+<span class="cm">* It relies on standard Bluetooth LE API definitions (e.g., from `bluetooth/bluetooth.h`</span>
+<span class="cm">* and `bluetooth/gap.h`) and associated structure definitions (e.g., `struct bt_le_adv_param`,</span>
+<span class="cm">* `struct bt_data`) that would typically be found in your project&#39;s header files.</span>
+<span class="cm">*/</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="c1">// adv date: ad, no scan response data</span>
+<span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_le_adv_start</span><span class="p">(</span><span class="n">adv_param</span><span class="p">,</span><span class="w"> </span><span class="n">ad</span><span class="p">,</span><span class="w"> </span><span class="n">ARRAY_SIZE</span><span class="p">(</span><span class="n">ad</span><span class="p">),</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Advertising failed to start (err %d)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Advertising started (%d times)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">broadcast_count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></li>
+</ul>
+</li>
+<li><strong>bt_le_adv_stop</strong>: 
+    Stop advertising.  <ul>
+<li><strong>Returns</strong>:
+    Zero on success or (negative) error code otherwise.<br />
+    In major Bluetooth stacks like Zephyr's, functions for stopping advertising are safe to call even if no advertising is currently active.</li>
+</ul>
+</li>
+<li><strong>bt_le_adv_update_data</strong>: <br />
+    Dynamically update the content of your advertising and/or scan response packets while the device is already actively advertising.
+     <code>c
+    int bt_le_adv_update_data(const struct bt_data *ad, size_t ad_len,
+              const struct bt_data *sd, size_t sd_len)</code><br />
+    It doesn't typically stop the current advertising interval and immediately restart; instead, the change takes effect for the next scheduled advertisement.<br />
+    You generally cannot update advertising data using bt_le_adv_update_data() if the advertising is currently stopped.</li>
+</ul>
+<h3 id="3-scanner-module">3. Scanner module</h3>
+<p>While the GAP in BLE defines the core roles and procedures for device discovery and connection establishment—including both advertising and scanning concepts—the practical software implementation often encapsulates scanning functionality within a dedicated module. This design promotes modularity and better code organization.</p>
+<p>Consequently, when developing applications that involve scanning, you'll need to include specific headers for the scanning module in addition to the general GAP headers. For instance, in environments like Zephyr or Nordic Connect SDK, you'd include:
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/gap.h&gt;</span>
+<span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bluetooth/scan.h&gt;</span>
+</code></pre></div>
+Here, <code>&lt;zephyr/bluetooth/gap.h&gt;</code> provides general GAP-related definitions and APIs, while <code>&lt;bluetooth/scan.h&gt;</code> specifically offers functions and structures for configuring and executing BLE scan operations. You can find detailed information about the scanner module in its official documentation: <a href="https://docs.nordicsemi.com/bundle/ncs-1.1.0/page/nrf/include/bluetooth/scan.html">Nordic_Scanner_module</a>.</p>
+<h4 id="initialization-and-configuration"><strong>Initialization and Configuration</strong></h4>
+<p>This step covers functions essential for setting up the scanner and defining its fundamental operational parameters. This is where you prepare the scanning mechanism before it becomes active.
+- <strong>bt_scan_init</strong> <br />
+    This function initializes the BLE Scanning Module. Proper initialization ensures the module is ready to execute scan operations and handle subsequent connection attempts based on the provided configuration.
+    <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">bt_scan_init</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_scan_init_param</span><span class="w"> </span><span class="o">*</span><span class="n">init</span><span class="p">);</span>
+</code></pre></div>
+    - <strong>Parameters:</strong>
+        - <code>const struct bt_scan_init_param *init</code> 
+            <img alt="BT_SCAN_INIT_PARAM" src="../assets/GAP/BT_SCAN_INIT_PARAM.png" /><br />
+- <strong>bt_scan_cb_register</strong> <br />
+    This function registers a set of callbacks that allow your application to monitor and react to various events occurring during the BLE scanning process. By registering these callbacks, your application gains visibility into when scan filters are matched, when no devices are found for a filter, or when connection attempts fail after a scan.
+    <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">bt_scan_cb_register</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_scan_cb</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">);</span>
+</code></pre></div>
+    - <strong>Parameters:</strong>
+        - <code>struct bt_scan_cb *cb</code><br />
+            A pointer to a structure containing the function pointers for your application's scanning callbacks. <br />
+            The <code>BT_SCAN_CB_INIT</code> macro is a convenient way to initialize a <code>struct bt_scan_cb</code> instance with your specific callback functions. It streamlines the process by setting up the structure with the provided function pointers.
+                <img alt="BT_SCAN_CB_INIT" src="../assets/GAP/BT_SCAN_CB_INIT.png" /> </p>
+<h4 id="scan-filtering"><strong>Scan Filtering</strong></h4>
+<p>Before starting the actual scan, you'll typically want to define what kind of advertisement packets you're interested in. Functions in this category allow you to add, remove, and manage filters, ensuring your application only processes relevant scan reports.
+- <strong>bt_scan_filter_add</strong> <br />
+    This function allows you to add a new filter to the BLE scanning module. By applying filters, your application can reduce the number of irrelevant advertisement reports it receives, thereby saving processing power and focusing on devices or services of interest.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">bt_scan_filter_add</span><span class="p">(</span><span class="k">enum</span><span class="w"> </span><span class="n">bt_scan_filter_type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</code></pre></div>
+    - <strong>Parameters:</strong>
+        - <code>enum bt_scan_filter_type type</code> 
+            Specifies the type of filter to be added. This enumeration defines the criteria for filtering, such as device address, advertising data (e.g., UUIDs, manufacturer data).
+            - BT_SCAN_FILTER_TYPE_NAME: Filter for names.
+            - BT_SCAN_FILTER_TYPE_SHORT_NAME: Filter for short names.
+            - BT_SCAN_FILTER_TYPE_ADDR: Filter for addresses.
+            - BT_SCAN_FILTER_TYPE_UUID: Filter for UUIDs.
+            - BT_SCAN_FILTER_TYPE_APPEARANCE: Filter for appearances.
+            - BT_SCAN_FILTER_TYPE_MANUFACTURER_DATA: Filter for manufacturer data.
+        - <code>const void *data</code>
+            A pointer to the specific data for the filter. The type and structure of this data depend on the type parameter.
+    - <strong>Return</strong><br />
+        0 on success, or a negative error code if the operation failed (e.g., no available space for the filter or the filter already exists).
+- <strong>bt_scan_filter_enable</strong> <br />
+    This function enables configured scanning filters. It allows you to specify which types of filters should be active and how multiple enabled filters should be combined to determine a match. This provides fine-grained control over which advertisement reports are processed by your application.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">bt_scan_filter_enable</span><span class="p">(</span><span class="n">u8_t</span><span class="w"> </span><span class="n">mode</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">match_all</span><span class="p">);</span>
+</code></pre></div>
+    - <strong>Parameters:</strong>
+        - <code>u8_t mode</code><br />
+            A bitmask indicating which types of filters to enable. You can combine multiple filter types using the bitwise OR operator.
+        - <code>bool match_all</code><br />
+<code>true</code>: AND operation. A device must match all enabled filter types (mode) to be considered a match.<br />
+<code>false</code>: OR operation. A device will be considered a match if it matches any of the enabled filter types (mode). 
+    - <strong>Return</strong><br />
+        0 If the operation was successful. Otherwise, a negative error code is returned.
+- <strong>bt_scan_filter_remove_all</strong><br />
+    This function clears out all the specific filter data you previously added. All your saved addresses, UUIDs, etc., are gone from the module's memory.
+    <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">bt_scan_filter_remove_all</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</code></pre></div>
+    However, it does not change the state of the filtering mechanism itself. If you previously called <code>bt_scan_filter_enable</code> to turn the filtering on, it remains on.</p>
+<h4 id="scan-control"><strong>Scan Control</strong></h4>
+<p>This step manages the active state of the scanner. This includes starting the scanning process or stopping it entirely.
+- <strong>bt_scan_start</strong> <br />
+    This function starts the scanning according to the configuration set during the initialization.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">bt_scan_start</span><span class="p">(</span><span class="k">enum</span><span class="w"> </span><span class="n">bt_scan_type</span><span class="w"> </span><span class="n">scan_type</span><span class="p">);</span>
+</code></pre></div>
+    - <strong>Parameters:</strong>
+        - <code>enum bt_scan_type scan_type</code><br />
+            - <code>BT_SCAN_TYPE_SCAN_PASSIVE</code>: The scanner (Observer role) only listens for advertisement packets from other devices. It does not transmit any packets, such as scan requests. 
+            - <code>BT_SCAN_TYPE_SCAN_ACTIVE</code>:  In active scanning, the scanner actively participates in the discovery process. When it receives an advertising packet from a scannable or connectable advertiser, it sends a Scan Request (SCAN_REQ) packet back to that advertiser.
+    - <strong>Return</strong><br />
+        0 If the operation was successful. Otherwise, a negative error code is returned.
+- <strong>bt_scan_stop</strong><br />
+    Function for stopping scanning.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">bt_scan_stop</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</code></pre></div></p>
+<h3 id="4-connection">4. Connection</h3>
+<p>Upon receiving a connectable advertisement, the scanner can decide to send a connection request packet back to the advertiser. This packet contains information necessary for establishing the connection, such as the scanner's address and desired connection parameters. If the advertiser accepts the connection request, a direct, point-to-point connection is established between the two devices. This transition marks a significant shift from the broadcast-based advertising phase to a communication link. Once a connection is established, both the <strong>Central</strong> and the <strong>Peripheral</strong> device have the capability to disconnect from the link. <br />
+<img alt="conn_request" src="../assets/GAP/conn_request.png" />  <br />
+Just as <code>scan.h</code> and <code>scan.c</code> form a scanner module, a separate <code>conn.h</code> and <code>conn.c</code> module is used to provide the core functions and definitions necessary for managing a BLE connection. You can find detailed information about the scanner module in its official documentation: <a href="https://docs.zephyrproject.org/apidoc/latest/group__bt__conn.html">Connection Management</a></p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zephyr/bluetooth/conn.h&gt;</span>
+</code></pre></div>
+<h4 id="registering-connection-instance-and-callback-functions">Registering Connection Instance and Callback Functions</h4>
+<ul>
+<li><strong>bt_conn:</strong>
+    This struct is a fundamental data structure within the BLE stack that uniquely represents and stores all essential information about a connection. it can be initially defined as NULL and then assigned a valid connection object when a connection is successfully established.</li>
+<li><strong>bt_conn_cb:</strong>  <br />
+    This structure is used for tracking the state of a connection.   <br />
+    Data Fields:      <ul>
+<li>connected: <br />
+    The connected callback function, part of the <code>bt_conn_cb</code> structure, is invoked by the BLE stack to notify the application when a new connection has been successfully established, providing the connection object (<code>conn</code>) and any error status (<code>err</code>).
+    <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">bt_conn_cb</span><span class="o">::</span><span class="n">connected</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">err</span><span class="p">)</span>
+</code></pre></div></li>
+<li>disconnected: <br />
+    The disconnected callback function is called by the BLE stack to inform the application when an active connection has been terminated, providing the connection object and the specific reason for the disconnection.
+    <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">bt_conn_cb</span><span class="o">::</span><span class="n">disconnected</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">reason</span><span class="p">)</span>
+</code></pre></div></li>
+<li>The <code>bt_conn_cb</code> structure also can include function pointers to handle other crucial connection events, such as updates to connection parameters or changes in the connection's security level...</li>
+</ul>
+</li>
+<li><strong>bt_conn_cb_register:</strong> <br />
+    This function registers a set of callbacks to monitor connection states, returning <code>0</code> on success or <code>-EEXIST</code> if the callbacks have already been registered.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">bt_conn_cb_register</span><span class="w"> </span><span class="p">(</span><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn_cb</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cb</span><span class="w">  </span><span class="p">)</span><span class="w">   </span>
+</code></pre></div></li>
+</ul>
+<h4 id="core-functions-for-active-ble-connections">Core Functions for Active BLE Connections</h4>
+<ul>
+<li>
+<p><strong>bt_conn_ref:</strong><br />
+    This function is used to increment the reference count of a given struct <code>bt_conn</code> object. In systems like BLE stacks, reference counting is a common memory management technique to ensure that an object is not deallocated (freed from memory) while other parts of the code are still using it.</p>
+<p>When you provide a connection object <code>conn</code> and call this function, you are telling the stack that you are now using this object and it should be kept alive. The function returns the connection object itself (with its incremented reference count) or NULL if the object's reference count was already zero.<br />
+- <strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">current_conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="c1">// The connected callback function</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">on_connected</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">err</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//store connection object with its reference count  </span>
+<span class="w">    </span><span class="n">current_conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_conn_ref</span><span class="p">(</span><span class="n">conn</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>bt_conn_get_info:</strong>
+    This function provides connection information and returns <code>0</code> on success or (negative) error code on failure.
+    <div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">bt_conn_get_info</span><span class="w">    </span><span class="p">(</span><span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn_info</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">)</span>
+</code></pre></div></p>
+<ul>
+<li><strong>Parameters</strong> <ul>
+<li><code>bt_conn *    conn</code> <br />
+    Connection object.</li>
+<li><code>bt_conn_info *   info</code>  <br />
+    The struct <code>bt_conn_info</code> is a data structure used to provide detailed, read-only information about an active BLE connection, such as the Connection Role (Central or Peripheral), Security level and current Connection state, among other relevant parameters.   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="managing-disconnection-in-ble">Managing Disconnection in BLE</h4>
+<ul>
+<li>
+<p><strong>bt_conn_unref:</strong><br />
+     This function is used to decrement the reference count of a struct <code>bt_conn</code> object. For every <code>bt_conn_ref</code> call, there should typically be a corresponding <code>bt_conn_unref</code> call to decrement the reference count when you're done with the object. 
+     <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="n">bt_conn_unref</span><span class="w"> </span><span class="p">(</span><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="w">    </span><span class="n">conn</span><span class="w">    </span><span class="p">)</span><span class="w">   </span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>bt_conn_disconnect:</strong>
+    This function disconnect an active connection with the specified reason code or cancel pending outgoing connection.
+    <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">bt_conn_disconnect</span><span class="w">  </span><span class="p">(</span><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="w">    </span><span class="n">conn</span><span class="p">,</span><span class="w">   </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">reason</span><span class="w"> </span><span class="p">)</span>
+</code></pre></div></p>
+<ul>
+<li><strong>Parameters</strong> <ul>
+<li><code>bt_conn *    conn</code> <br />
+    Connection object.</li>
+<li><code>reason</code>      <ul>
+<li><code>BT_HCI_ERR_REMOTE_USER_TERM_CONN</code>: The remote device intentionally disconnected (disconnect reason for a normal disconnect).</li>
+<li><code>BT_HCI_ERR_AUTH_FAIL</code>: Authentication failed.</li>
+<li><code>BT_HCI_ERR_REMOTE_LOW_RESOURCES</code>: Remote device disconnected due to insufficient resources.</li>
+<li><code>BT_HCI_ERR_REMOTE_POWER_OFF</code>: Remote device powered off or reset.</li>
+<li><code>BT_HCI_ERR_UNSUPP_REMOTE_FEATURE</code>: Remote device doesn't support a requested feature.</li>
+<li><code>BT_HCI_ERR_PAIRING_NOT_SUPPORTED</code>: Remote device doesn't support a requested feature.</li>
+<li><code>BT_HCI_ERR_UNACCEPT_CONN_PARAM</code>: Remote device rejected proposed connection parameters.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "toc.follow", "content.code.annotate"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      
+    
+  </body>
+</html>

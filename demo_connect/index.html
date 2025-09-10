@@ -1,0 +1,1202 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../demo/">
+      
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>Second Demo - A BLE Neighbour Discovery Protocol on nRF52</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#demo-connect-notebook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-header__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A BLE Neighbour Discovery Protocol on nRF52
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Second Demo
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-nav__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    A BLE Neighbour Discovery Protocol on nRF52
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Background
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BLEnd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to BLEnd
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BLE_Background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BLE Background
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction_to_Ktimer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using a Timer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction_to_GAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to GAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First Demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Second Demo
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Second Demo
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#led-button-service-lbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Button Service (LBS)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LED Button Service (LBS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED indicators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Server
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Client
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initiate-a-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initiate a connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demo Results 📡
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#led-button-service-lbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Button Service (LBS)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LED Button Service (LBS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED indicators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Server
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Client
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initiate-a-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initiate a connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demo Results 📡
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="demo-connect-notebook">Demo-Connect Notebook</h1>
+<h2 id="introduction">Introduction</h2>
+<p>In the previous example from the <code>demo</code> folder, you learned how to configure advertising and scanning to enable device discovery using BLE. In this example, we take it a step further: once devices discover each other, they proceed to establish a connection and demonstrate basic data exchange through a custom service.</p>
+<p>Unlike the previous demo, this example is presented as a challenge, requiring some self-guided learning. To prepare, we highly recommend reading <a href="https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/lessons/lesson-4-bluetooth-le-data-exchange/">Lesson 4</a> from the Nordic Bluetooth Low Energy Fundamentals course. It provides essential background on how GATT (Generic Attribute Profile) services and characteristics are used to structure and transfer data in a BLE connection.</p>
+<h2 id="led-button-service-lbs">LED Button Service (LBS)</h2>
+<p>While Lesson 4, Exercises 1 and 2 in the Nordic tutorial provide a detailed walkthrough of configuring an LBS server, including characteristic read/write operations and sending indications, their example focuses on interaction between a BLE device (as the server) and a mobile app (as the client).</p>
+<p>In contrast, this <code>demo_connect</code> is designed to demonstrate device-to-device communication, where both the <strong>client</strong> and <strong>server</strong> are embedded BLE devices. To simplify the setup, the server only provides a basic Button Characteristic, and the emphasis is placed on client-side configuration, including service discovery, characteristic subscription, and handling received indications.</p>
+<p>The goal is to show how two BLE-enabled devices can autonomously discover each other, establish a connection, and exchange data using GATT, without relying on external apps or user interaction via smartphones.</p>
+<p>In this setup:</p>
+<ul>
+<li>
+<p>The server provides a Button Characteristic, which reflects the state of a physical button on the device.</p>
+</li>
+<li>
+<p>The client first performs GATT service discovery to locate the LBS on the server. Once the service is found, the client subscribes to the Button Characteristic.</p>
+</li>
+<li>
+<p>From that point on, whenever the server detects a change in the button state, it sends an indication to the client. </p>
+</li>
+<li>
+<p>This allows the client to receive real-time updates whenever the server’s button is pressed or released, illustrating how BLE GATT indications can be used for efficient event-driven communication.</p>
+</li>
+</ul>
+<p>Due to the higher memory requirements of the <strong>central</strong> role, please make sure to use two BLE development boards that support <strong>central</strong> functionality.</p>
+<p>Build and flash the <code>demo_connect</code> application onto both devices. Once running, each device will first execute the BLEnd protocol to discover nearby peers through advertising and scanning. After discovery, one device will initiate a connection to the other and proceed with GATT-based service interaction, completing the full discovery-and-connect flow.</p>
+<h3 id="configuration">Configuration</h3>
+<p>In the <code>prj.conf</code> file, we enable the required Bluetooth GAP roles and also limit the device to a single active connection at a time, which simplifies connection management.</p>
+<p><div class="highlight"><pre><span></span><code># enable BLE GAP roles
+CONFIG_BT_PERIPHERAL=y
+CONFIG_BT_CENTRAL=y
+CONFIG_BT_MAX_CONN=1
+</code></pre></div>
+Since the central device will perform GATT service discovery and handle characteristics, we enable <code>CONFIG_BT_GATT_CLIENT</code> and <code>CONFIG_BT_GATT_DM</code> to support the client role and allow dynamic discovery of services on the peer device. Because GATT discovery and central operations require more memory, we also set <code>CONFIG_HEAP_MEM_POOL_SIZE=2048</code> to ensure the application has sufficient dynamic memory during runtime.</p>
+<div class="highlight"><pre><span></span><code>CONFIG_BT_GATT_CLIENT=y
+CONFIG_BT_GATT_DM=y
+CONFIG_HEAP_MEM_POOL_SIZE=2048
+</code></pre></div>
+<h3 id="led-indicators">LED indicators</h3>
+<p>As in the previous demo, LED2 and LED3 are used to indicate the scanning and advertising phases, respectively. In this example, we also utilize <strong>LED1</strong> and <strong>LED4</strong> to indicate the device’s role after a connection is established:</p>
+<p><strong>LED1</strong> turns on if the device is acting as a <strong>peripheral</strong>.</p>
+<p><strong>LED4</strong> turns on if the device is acting as a <strong>central</strong>.</p>
+<p>In the BLE GATT service, the peripheral functions as the <strong>server</strong>, while the central acts as the <strong>client</strong>.</p>
+<p>For the <strong>central/client</strong> device, <strong>LED1</strong> serves an additional purpose: it reflects the button state received from the server via indications. When a "button pressed" indication is received, LED1 turns on. When a "button released" message is received, LED1 turns off. This provides real-time, visible feedback that the central device is successfully receiving and interpreting the server's characteristic updates.</p>
+<h2 id="server">Server</h2>
+<p>The files <code>my_lbs.c</code> and <code>my_lbs.h</code> contain the code for the LBS server, adapted from Lesson 4, Exercises 1 and 2 in the Nordic tutorial. Since the implementation closely follows the original example, we won’t go into detail here.</p>
+<p>As a quick test, you can build and flash the server code onto a development board and interact with it using a mobile app (e.g., nRF Connect for Mobile). This allows you to verify that the Button Characteristic is functioning correctly before proceeding with full device-to-device interaction.</p>
+<p>To demonstrate the server functionality, you can use the nRF Connect for Mobile app as the client.   </p>
+<ul>
+<li>
+<p>Scan for nearby BLE devices in the app. Look for the device named <code>my_LBS</code>. Once found, connect to the device.  <br />
+<img alt="server1" src="assets/demo_connect/server1.png" />  </p>
+</li>
+<li>
+<p>The app will automatically discover the services provided by the server. Locate the Button Characteristic, and tap the button outlined in red to subscribe to indications.  </p>
+<p><img alt="server2" src="assets/demo_connect/server2.png" /></p>
+</li>
+<li>
+<p>Now, when you press the physical button (Button 1) on the development board, the server sends a Button State indication, which is received and displayed by the mobile app. </p>
+<p><img alt="server3" src="assets/demo_connect/server3.png" />
+<img alt="server4" src="assets/demo_connect/server4.png" /></p>
+</li>
+</ul>
+<h2 id="client">Client</h2>
+<p>From the interaction between the server and the mobile app, we can clearly see the key responsibilities of a central device in this context:</p>
+<ol>
+<li>
+<p>Scan for the target peripheral device and initiate a connection once the device is discovered.</p>
+</li>
+<li>
+<p>Perform service discovery to locate the desired GATT service and characteristics.</p>
+</li>
+<li>
+<p>Subscribe to indications from the Button State characteristic to receive updates.</p>
+</li>
+</ol>
+<p>These same steps will be implemented in the client-side firmware when setting up communication between two development boards.</p>
+<h3 id="initiate-a-connection">Initiate a connection</h3>
+<ul>
+<li>
+<p><strong>Advertiser:</strong>
+    First, we configure the device to broadcast <strong>connectable</strong> advertisements instead of non-connectable beacons, allowing other devices to initiate a connection once discovered.   </p>
+<p>in <code>demo_connect/src/advertiser_scanner.c</code> <br />
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cm">/* BLE Advertising Parameters variable */</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_le_adv_param</span><span class="w"> </span><span class="o">*</span><span class="n">adv_param</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">BT_LE_ADV_PARAM</span><span class="p">(</span><span class="n">BT_LE_ADV_OPT_CONNECTABLE</span><span class="p">,</span><span class="w"> </span><span class="cm">/* connectable */</span>
+<span class="w">                </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="cm">/* assign an initial value first */</span>
+<span class="w">                </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="cm">/* assign an initial value first */</span>
+<span class="w">                </span><span class="nb">NULL</span><span class="p">);</span><span class="w"> </span><span class="cm">/* Set to NULL for undirected advertising */</span>
+</code></pre></div>
+- <strong>Scanner:</strong>
+On the scanning side, we continue to use a Manufacturer Data filter within the scan module. When a device detects an advertisement that matches this filter, it immediately initiates a connection to the advertising peer. This enables automatic pairing between BLEnd-enabled devices without user interaction.   </p>
+<p>in <code>demo_connect/src/advertiser_scanner.c</code>     <br />
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_scan_init_param</span><span class="w"> </span><span class="n">scan_init</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">scan_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">my_scan_param</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">connect_if_match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+</code></pre></div>
+- <strong>Connection:</strong>  <br />
+The functions and structures used for connection management are detailed in the documentation <a href="../docs/introduction_to_GAP.md">Introduction to GAP</a>.   </p>
+<p>In <code>main.c</code>, we declare a static pointer to hold the active connection. This variable is used throughout the application to track the current BLE connection and interact with the connected peer. We also register connection callbacks using a <code>bt_conn_cb</code> structure. These callbacks handle key connection events such as connection established, disconnected. Registering these callbacks allows the application to respond to connection state changes appropriately.</p>
+<p><div class="highlight"><pre><span></span><code><span class="w">   </span><span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">default_conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn_cb</span><span class="w"> </span><span class="n">connection_callbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">.</span><span class="n">connected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">on_connected</span><span class="p">,</span>
+<span class="w">        </span><span class="p">.</span><span class="n">disconnected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">on_disconnected</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">        </span><span class="c1">// Register the connection callbacks </span>
+<span class="w">        </span><span class="n">bt_conn_cb_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">connection_callbacks</span><span class="p">);</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+Next, we implement the connection and disconnection callback functions to manage the BLE connection lifecycle.</p>
+<ul>
+<li>Inside the <strong>connection</strong> callback function, we first stop the BLEnd protocol because <code>CONFIG_BT_MAX_CONN</code> is set to 1 in the <code>prj.conf</code> file. Then, we increase the reference count to safely keep track of the active connection, followed by retrieving detailed connection information. The <code>info.role</code> field indicates whether the device is currently acting as a central or peripheral. Based on this role, we turn on the corresponding LED to visually indicate the device’s role after the connection is established.
+    <div class="highlight"><pre><span></span><code><span class="cp">#define CONN_LED_PERIPHERAL DK_LED1</span>
+<span class="cp">#define CONN_LED_CENTRAL DK_LED4</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">on_connected</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">err</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">err_dm</span><span class="p">;</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn_info</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="cm">/*  check errors ... */</span>
+
+<span class="w">    </span><span class="n">blend_stop</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">default_conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_conn_ref</span><span class="p">(</span><span class="n">conn</span><span class="p">);</span>
+<span class="w">    </span><span class="n">err_dm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_conn_get_info</span><span class="p">(</span><span class="n">default_conn</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err_dm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Failed to get connection info %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">role</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BT_CONN_ROLE_PERIPHERAL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Connected: BT_CONN_ROLE_PERIPHERAL</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dk_set_led_on</span><span class="p">(</span><span class="n">CONN_LED_PERIPHERAL</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">role</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BT_CONN_ROLE_CENTRAL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Connected: BT_CONN_ROLE_CENTRAL</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dk_set_led_on</span><span class="p">(</span><span class="n">CONN_LED_CENTRAL</span><span class="p">);</span>
+<span class="w">        </span><span class="cm">/*  service discovery (next step) ... */</span>
+<span class="w">    </span><span class="p">}</span><span class="w">      </span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li>In the <strong>disconnect</strong> callback function, we log the reason for disconnection, unreference the connection object and set <code>default_conn</code> back to <code>NULL</code> since there is no active connection anymore. After that, we restart the BLEnd protocol to resume neighbor discovery following the disconnection.
+    <div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">on_disconnected</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">reason</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Disconnected (reason %u)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">reason</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">dk_set_led_off</span><span class="p">(</span><span class="w"> </span><span class="n">CONN_LED_CENTRAL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">dk_set_led_off</span><span class="p">(</span><span class="n">CONN_LED_PERIPHERAL</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">bt_conn_unref</span><span class="p">(</span><span class="n">default_conn</span><span class="p">);</span>
+<span class="w">    </span><span class="n">default_conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">blend_start</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></li>
+</ul>
+<h3 id="service-discovery">Service Discovery</h3>
+</li>
+</ul>
+<p>We first define a discovery callback structure: <code>struct bt_gatt_dm_cb discovery_cb</code>. This structure contains three callback functions that will be triggered during the GATT discovery process: one when the target service is found, one when the service is not found, and one for handling errors. In these callbacks, we simply log the service discovery states: "Service found", "Service not found", or "Error while discovering GATT database" along with the corresponding error code.
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">discovery_complete</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm</span><span class="w"> </span><span class="o">*</span><span class="n">dm</span><span class="p">,</span>
+<span class="w">                   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">    </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Service found&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">discovery_service_not_found</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Service not found</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">discovery_error</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span>
+<span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">,</span>
+<span class="w">                </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Error while discovering GATT database: (%d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm_cb</span><span class="w"> </span><span class="n">discovery_cb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">completed</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">discovery_complete</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">service_not_found</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">discovery_service_not_found</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">error_found</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">discovery_error</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<p>In the <code>on_connect</code> callback, the central device initiates GATT service discovery using:
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">on_connected</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">err</span><span class="p">){</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">err_dm</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/* ... */</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">role</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BT_CONN_ROLE_CENTRAL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Connected: BT_CONN_ROLE_CENTRAL</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">                </span><span class="n">dk_set_led_on</span><span class="p">(</span><span class="n">CONN_LED_CENTRAL</span><span class="p">);</span>
+<span class="w">                </span><span class="cm">/*  service discovery  */</span>
+<span class="w">                </span><span class="n">err_dm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_start</span><span class="p">(</span><span class="n">default_conn</span><span class="p">,</span>
+<span class="w">                          </span><span class="n">BT_UUID_LBS</span><span class="p">,</span>
+<span class="w">                          </span><span class="o">&amp;</span><span class="n">discovery_cb</span><span class="p">,</span>
+<span class="w">                          </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w">       </span>
+<span class="p">}</span>
+</code></pre></div>
+This function starts the discovery process for the LBS on the connected peripheral device. The parameters passed are:</p>
+<ul>
+<li>
+<p><code>default_conn</code>: the active connection to the peer device,</p>
+</li>
+<li>
+<p><code>BT_UUID_LBS</code>: the UUID of the service to discover,</p>
+</li>
+<li>
+<p><code>discovery_cb</code>: a struct containing callback functions to be triggered during discovery,</p>
+</li>
+<li>
+<p><code>NULL</code>: a user-defined context to be passed to callback functions. Set to <code>NULL</code> here.</p>
+</li>
+</ul>
+<h3 id="discovery-complete">Discovery Complete</h3>
+<p>After the GATT service discovery completes, we proceed to assign the discovered handles to our client structure and subscribe to the Button Characteristic indications. Finally, we release the discovery manager’s resources using <code>bt_gatt_dm_data_release</code> to free memory allocated during the discovery process.
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">discovery_complete</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm</span><span class="w"> </span><span class="o">*</span><span class="n">dm</span><span class="p">,</span>
+<span class="w">                   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">    </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;Service found&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">my_lbs_client_handles_assign</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bt_my_client</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_lbs_client_button_subscribe</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bt_my_client</span><span class="p">,</span><span class="w"> </span><span class="n">my_lbs_indicate_cb</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printk</span><span class="p">(</span><span class="s">&quot;Could not subscribe to LBS button characteristic (err %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="n">err</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_data_release</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Could not release the discovery data (err %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>The client-related functions and structures are defined in the <code>my_lbs_client.c</code> and <code>my_lbs_client.h</code> files.</p>
+<ul>
+<li>
+<p><strong>Assign the discovered handles:</strong> <br />
+    The function <code>my_lbs_client_handles_assign</code> is responsible for extracting and storing relevant GATT handles (such as the characteristic value handle and CCCD handle) from a discovered LBS, using the GATT Discovery Manager (<code>bt_gatt_dm</code>). It maps these handles into the local <code>my_lbs_client</code> structure so the client can interact with the LBS (e.g., subscribe to button state changes).
+    <strong>Parameters:</strong>    </p>
+<ul>
+<li>
+<p><code>my_lbs_client</code>: This structure is defined in <code>my_lbs_client.h</code>, which holds necessary state and data for interacting with a remote LBS on a BLE peripheral. It is used by the LBS client application to store the BLE connection, characteristic handles, and internal state for subscribing to button state indications.</p>
+</li>
+<li>
+<p><code>dm</code>: This pointer is a reference to a GATT Discovery Manager <code>bt_gatt_dm</code> instance, which contains the results of a completed service discovery procedure on a connected BLE peripheral.</p>
+</li>
+</ul>
+<p>In <code>my_lbs_client.h</code> <br />
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_lbs_client_button</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/** Value handle. */</span>
+<span class="w">        </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">handle</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/** Handle of the characteristic CCC descriptor. */</span>
+<span class="w">        </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">ccc_handle</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/** GATT subscribe parameters for indicate. */</span>
+<span class="w">        </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_subscribe_params</span><span class="w"> </span><span class="n">indicate_params</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/** Indicate callback. */</span>
+<span class="w">        </span><span class="n">my_lbs_client_indicate_cb</span><span class="w"> </span><span class="n">indicate_cb</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_lbs_client</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/** Connection object. */</span>
+<span class="w">        </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_conn</span><span class="w"> </span><span class="o">*</span><span class="n">conn</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/** LBS button characteristic. */</span>
+<span class="w">        </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_lbs_client_button</span><span class="w"> </span><span class="n">button_char</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/** Internal state. */</span>
+<span class="w">        </span><span class="n">atomic_t</span><span class="w"> </span><span class="n">state</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+</code></pre></div></p>
+<p>In <code>my_lbs_client.c</code> <br />
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">my_lbs_client_handles_assign</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm</span><span class="w"> </span><span class="o">*</span><span class="n">dm</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">my_lbs_client</span><span class="w"> </span><span class="o">*</span><span class="n">my_lbs_c</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Get the primary service attribute and value</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm_attr</span><span class="w"> </span><span class="o">*</span><span class="n">gatt_service_attr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_service_get</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_service_val</span><span class="w"> </span><span class="o">*</span><span class="n">gatt_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_attr_service_val</span><span class="p">(</span><span class="n">gatt_service_attr</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Declare variables for characteristic and descriptor attributes</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm_attr</span><span class="w"> </span><span class="o">*</span><span class="n">gatt_chrc</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_dm_attr</span><span class="w"> </span><span class="o">*</span><span class="n">gatt_desc</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Check for null pointers</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">dm</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">my_lbs_c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Verify that the discovered service is the expected LBS</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bt_uuid_cmp</span><span class="p">(</span><span class="n">gatt_service</span><span class="o">-&gt;</span><span class="n">uuid</span><span class="p">,</span><span class="w"> </span><span class="n">BT_UUID_LBS</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">ENOTSUP</span><span class="p">;</span><span class="w">  </span><span class="c1">// Service not supported</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">LOG_DBG</span><span class="p">(</span><span class="s">&quot;Getting handles from my_lbs service.&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Reinitialize the client structure to clear any previous state</span>
+<span class="w">    </span><span class="n">my_lbs_reinit</span><span class="p">(</span><span class="n">my_lbs_c</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Find the LBS-BUTTON characteristic by UUID</span>
+<span class="w">    </span><span class="n">gatt_chrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_char_by_uuid</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span><span class="w"> </span><span class="n">BT_UUID_LBS_BUTTON</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">gatt_chrc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;No LBS characteristic found.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Find the characteristic value descriptor (i.e., the actual value handle)</span>
+<span class="w">    </span><span class="n">gatt_desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_desc_by_uuid</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span><span class="w"> </span><span class="n">gatt_chrc</span><span class="p">,</span><span class="w"> </span><span class="n">BT_UUID_LBS_BUTTON</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">gatt_desc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;No LBS-BUTTON characteristic value found.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Store the value handle in the client structure</span>
+<span class="w">    </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gatt_desc</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Find the CCCD (Client Characteristic Configuration Descriptor)</span>
+<span class="w">    </span><span class="n">gatt_desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_desc_by_uuid</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span><span class="w"> </span><span class="n">gatt_chrc</span><span class="p">,</span><span class="w"> </span><span class="n">BT_UUID_GATT_CCC</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">gatt_desc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;No LBS-BUTTON CCC descriptor found.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Store the CCC handle in the client structure</span>
+<span class="w">    </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">ccc_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gatt_desc</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">LOG_DBG</span><span class="p">(</span><span class="s">&quot;LBS-BUTTON characteristic found&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Store the BLE connection reference for future operations</span>
+<span class="w">    </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_dm_conn_get</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Success</span>
+<span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Subscribe to the Button Characteristic:</strong>  <br />
+    The purpose of the function <code>my_lbs_client_button_subscribe</code> is to allow the client device to subscribe to indication messages from a remote BLE peripheral, so it can be indicated when the button state changes.</p>
+<p>The function first validates the input client structure and callback, then uses <code>atomic_test_and_set_bit</code> to check whether indication has already been enabled (<code>INDICATE_ENABLED</code>).</p>
+<p>It then sets the subscription parameters, including <code>ccc_handle</code>, <code>value_handle</code>, <code>value</code> (set to <code>BT_GATT_CCC_INDICATE</code>), and the <code>notify</code> callback. It also sets the <code>BT_GATT_SUBSCRIBE_FLAG_VOLATILE</code> flag to ensure the subscription is re-established after disconnection.</p>
+<p>Finally, it calls <code>bt_gatt_subscribe</code> to subscribe to the indication and returns the result.   </p>
+<p><strong>Parameters:</strong>  <br />
+- <code>my_lbs_c</code>: A pointer to the LBS client structure, which holds connection and characteristic information.  <br />
+- <code>dicate_cb</code>: A user-provided callback function that will be invoked when an indication is received from the button characteristic.    </p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">my_lbs_client_button_subscribe</span><span class="p">(</span><span class="k">struct</span><span class="w">  </span><span class="nc">my_lbs_client</span><span class="w"> </span><span class="o">*</span><span class="n">my_lbs_c</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">my_lbs_client_indicate_cb</span><span class="w"> </span><span class="n">indicate_cb</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Create a local pointer alias to simplify access to the indication parameters</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">bt_gatt_subscribe_params</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">indicate_params</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">my_lbs_c</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">indicate_cb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">atomic_test_and_set_bit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">INDICATE_ENABLED</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_INF</span><span class="p">(</span><span class="s">&quot;LBS-BUTTON characterisic indication already enabled.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// return -EALREADY;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Set the required GATT subscription parameters</span>
+<span class="w">    </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">indicate_cb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">indicate_cb</span><span class="p">;</span>
+<span class="w">    </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">ccc_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">ccc_handle</span><span class="p">;</span>
+<span class="w">    </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">value_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">button_char</span><span class="p">.</span><span class="n">handle</span><span class="p">;</span>
+<span class="w">    </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">value</span><span class="o">=</span><span class="w"> </span><span class="n">BT_GATT_CCC_INDICATE</span><span class="p">;</span>
+<span class="w">    </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">notify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_lbs_button_indicate</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">atomic_set_bit</span><span class="p">(</span><span class="n">params</span><span class="o">-&gt;</span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">BT_GATT_SUBSCRIBE_FLAG_VOLATILE</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">//subscribe to the characteristic</span>
+<span class="w">    </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bt_gatt_subscribe</span><span class="p">(</span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">atomic_clear_bit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_lbs_c</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">INDICATE_ENABLED</span><span class="p">);</span>
+<span class="w">        </span><span class="n">LOG_ERR</span><span class="p">(</span><span class="s">&quot;Subscribe to characteristic failed&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">LOG_DBG</span><span class="p">(</span><span class="s">&quot;Subscribed to  LBS-BUTTON characteristic&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+</ul>
+<h2 id="demo-results">Demo Results 📡</h2>
+<p>Now, build and flash the <code>demo_connect</code> application onto both boards. After a short time, BLEnd will connect the two devices automatically. The peripheral device will turn on LED1, while the central device will turn on LED4 to indicate their respective roles.   </p>
+<p><img alt="service_results1" src="assets/demo_connect/service_results1.png" /></p>
+<p>When you press <strong>Button 1</strong> on the <strong>peripheral</strong> board, LED1 on the central board will turn on. Releasing Button 1 on the peripheral will turn LED1 off on the central, reflecting the button state change via BLE indications.   </p>
+<p><img alt="service_results2" src="assets/demo_connect/service_results2.png" /></p>
+<p>We can also open the RTT (Real-Time Terminal) on both devices to observe more detailed logs. For example, if we reset one device, the other will log the disconnection reason 8 (The supervision timeout has expired). Then, both devices automatically start the BLEnd protocol. Once a neighbor is discovered, the scanner initiates a connection, performs service discovery, and starts receiving indications after the connection is established.  </p>
+<p><img alt="RTT_service" src="assets/demo_connect/RTT_service.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "toc.follow", "content.code.annotate"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      
+    
+  </body>
+</html>

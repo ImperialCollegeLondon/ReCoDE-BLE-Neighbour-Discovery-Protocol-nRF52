@@ -1,0 +1,802 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../BLEnd/">
+      
+      
+        <link rel="next" href="../introduction_to_Ktimer/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>BLE Background - A BLE Neighbour Discovery Protocol on nRF52</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ble-advertising-and-scanning-what-you-need-to-know" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-header__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            A BLE Neighbour Discovery Protocol on nRF52
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BLE Background
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://imperialcollegelondon.github.io/ReCoDE-home/" title="A BLE Neighbour Discovery Protocol on nRF52" class="md-nav__button md-logo" aria-label="A BLE Neighbour Discovery Protocol on nRF52" data-md-component="logo">
+      
+  <img src="../assets/iclogo.png" alt="logo">
+
+    </a>
+    A BLE Neighbour Discovery Protocol on nRF52
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ImperialCollegeLondon/ReCoDE-BLE-Neighbour-Discovery-Protocol-nRF52.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Background
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BLEnd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to BLEnd
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    BLE Background
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    BLE Background
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#advertising-and-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising and Discovery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advertising and Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertising-and-discovery-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising and Discovery Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertising-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertisement-packet" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertisement Packet
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction_to_Ktimer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using a Timer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction_to_GAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to GAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First Demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo_connect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Second Demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#advertising-and-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising and Discovery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advertising and Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertising-and-discovery-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising and Discovery Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertising-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertising Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advertisement-packet" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advertisement Packet
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!--
+This includes your top-level README as you index page i.e. homepage.
+
+This will not be the best approach for all exemplars, so feel free to customise
+your index page as you see fit.
+-->
+
+<!-- Add more files in the `docs/` directory for them to be automatically
+included in the Mkdocs documentation -->
+<h1 id="ble-advertising-and-scanning-what-you-need-to-know">BLE Advertising and Scanning: What You Need to Know</h1>
+<p>This guide is all about getting you up to speed on the core concepts of BLE (Bluetooth Low Energy) advertising and scanning. This introduction is based on Lesson 2 of Nordic's excellent <a href="https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/">BLE Fundamentals</a> tutorial. If you've got some time and want to dive deeper into the underlying theory, we highly recommend checking out their full tutorial. But if you're short on time and just need the essentials to get going, you can simply breeze through this document—it'll give you a solid foundation!  </p>
+<p><strong>A Note on Device Roles</strong><br />
+    Throughout the Nordic course above, you'll notice us using different terms for devices, sometimes "scanner" and "advertiser," and other times "central" and "peripheral." This can be a bit confusing, but it reflects the different roles devices play during the Bluetooth Low Energy (BLE) communication process. <br />
+    Here's why:<br />
+    Discovery Phase: In the initial discovery phase, a device actively sending out broadcast packets is called an "advertiser." A device listening for these advertisements is a "scanner." The scanner's goal here is often to find advertisers it wants to connect with.<br />
+    Connection Phase: If a scanner decides to initiate a connection with an advertiser, and that connection is successful, their roles evolve:<br />
+    The scanner transitions into a "central" device.<br />
+    The advertiser becomes a "peripheral" device.<br />
+    So, while "scanner" and "advertiser" describe roles during the discovery and advertising process, "central" and "peripheral" describe their roles once a connection has been established. Throughout this document, we'll consistently use the terms "scanner" and "advertiser" when discussing device roles.</p>
+<h2 id="advertising-and-discovery">Advertising and Discovery</h2>
+<h3 id="channels">Channels</h3>
+<p>Bluetooth LE devices communicate through 40 different frequency channels. <code>Channel 37</code>, <code>Channel 38</code>, <code>Channel 39</code> are mainly used for advertisement purposes. Other channels are mainly used for data transfer after establishing a connection.</p>
+<p><img alt="BLE Channels" src="../assets/BLE_background_1/channel.png" /></p>
+<h3 id="advertising-and-discovery-process">Advertising and Discovery Process</h3>
+<p><strong>Definition of Terms</strong></p>
+<ul>
+<li>
+<p><strong>Advertising intervals</strong>: The interval at which an advertising packet is sent. This can range from 20 ms to 10.24 s, with a step increase of 0.625 ms.</p>
+</li>
+<li>
+<p><strong>Scan interval:</strong> The interval at which a device scans for advertisement packets.</p>
+</li>
+<li><strong>Scan window:</strong> The time that a device spends scanning for packets at each scan interval.<br />
+Both scan interval and scan window range from 2.5 ms to 10.24 seconds with a step increase of 0.625 ms.  </li>
+</ul>
+<p><strong>Process</strong>  </p>
+<p>Since BLE operates in the crowded industrial, scientific, and medical radio band (ISM band), it has to share the airwaves with other technologies like Wi-Fi. This means there's always a risk of interference. On top of that, if two BLE devices try to send a signal on the same channel at the exact same time, they'll interfere with each other, making it hard for either message to get through.<br />
+To increase the chances that advertising packets will be received by other devices, BLE has a clever trick: it sends the same advertisement packet sequentially across all three primary advertising channels (channels 37, 38, and 39). <br />
+Simultaneously, a scanning device will scan these three channels to look for advertising devices. This redundancy significantly increases the likelihood that at least one of those packets will get through cleanly and be picked up by a scanning device.</p>
+<p><img alt="Discovery Process" src="../assets/BLE_background_1/process.png" /></p>
+<h3 id="advertising-types">Advertising Types</h3>
+<ul>
+<li>
+<p><strong>Connectable vs. Non-Connectable</strong>: </p>
+<p>Determines whether the scanner can connect to the advertiser or not.<br />
+To help us visualize the process, we'll refer to a power analysis graph from Nordic Semiconductor's <a href="https://devzone.nordicsemi.com/power/w/opp/2/online-power-profiler-for-bluetooth-le">online power profiler</a> — it's a great way to understand the energy consumption and timing of different advertising types. <br />
+* Connectable:
+    The graph can be used to illustrate a connectable advertising event. You'll observe a repeating pattern: the device shows a distinct, dark green peak, indicating the transmission (TX) of an advertisement packet. Immediately following each TX peak, there's a short period represented by a lighter green segment, which indicates the receive (RX) mode. This RX window is crucial as the device is listening for any incoming connection requests. This TX-then-RX sequence repeats for each of the three primary advertising channels (37, 38, and 39), although the graph itself may not explicitly label the individual channel numbers on the timeline. 
+    <img alt="Advertising:TX/RX" src="../assets/BLE_background_1/advTXRX.png" />
+* Non-Connectable:<br />
+    If we set the role to "Advertising (TX only)", the graph will exclusively show the TX (dark green) power consumption, with no associated RX (light green) activity. This clearly illustrates how a device solely focused on transmitting advertisements consumes power, without the added energy expenditure of listening for responses.
+    <img alt="Advertising:TXonly" src="../assets/BLE_background_1/advTXonly.png" /></p>
+</li>
+<li>
+<p><strong>Scannable vs. Non-Scannable</strong>: <br />
+    Determines if the advertiser accepts scan requests from a scanner<br />
+    In our exemplar, we won't be covering scan requests.  </p>
+<ul>
+<li><em>Scan request and response:</em><br />
+    During the discovery phase, if the scanner needs more information, it can send a scan request to the advertiser.<br />
+    If the advertiser receives and accepts this scan request, it will reply with a scan response broadcast packet. These scan response packets are also sent over the advertising channels. It's worth noting that a scan response can sometimes be an empty broadcast packet.<br />
+    This process allows the scanner to get additional information from the advertiser without needing to establish a full connection.  <br />
+    When an advertiser sends out scannable advertisements, it briefly opens its receiver (RX) on that same channel to listen for any scan requests from nearby devices. For example, after sending a packet on <code>channel 37</code>, it listens on <code>channel 37</code>; then after sending on <code>channel 38</code>, it listens on <code>channel 38</code>, and so on.  <br />
+    This allows it to listen for any scan requests from nearby devices. If it receives and accepts a scan request, it will then send a scan response.  </li>
+</ul>
+</li>
+<li>
+<p><strong>Directed vs. undirected</strong>:<br />
+    Determines whether advertisement packets are targeted to a specific scanner or not.<br />
+    In this exemplar, we will focus solely on undirected advertising. While Bluetooth Low Energy (BLE) also supports directed advertising (where an advertiser specifically targets a known device), our examples and discussions will not cover this type of broadcast.</p>
+</li>
+</ul>
+<h3 id="advertisement-packet">Advertisement Packet</h3>
+<p>BLE advertisement packets are made up of several parts, but for a quick start guide like this, we'll focus on the most important one for getting your message out: the payload.  </p>
+<p>Generally, the payload of a BLE advertisement packet consists of two main parts: a 6-byte address and up to 31 bytes of advertising data (<code>AdvData</code>). The <code>AdvData</code> is specifically where you'll place the information you want to broadcast.<br />
+<em> </em><em>Advertisement Data Structures</em>*:<br />
+    The Advertising Data portion of the advertisement packet isn't just a raw block of bytes; it's organized into multiple, smaller units called Advertisement Data Structures (AD Structures).<br />
+    Each AD structure is self-contained and follows a specific format:<br />
+    * Length Field: This field indicates the total length of that particular AD structure (including the Length, AD Type, and AD Data fields themselves).<br />
+    * AD Type Field: This field specifies the type of data contained within this AD structure. For example, it could indicate that the following data represents a device's local name, a UUID, or manufacturer-specific data. Note that the most common AD type is 1 byte long.<br />
+    * AD Data Field: This is where the actual information corresponding to the AD Type is placed.</p>
+<ul>
+<li><strong>Commonly used AD structures</strong><ul>
+<li>Complete local name (BT_DATA_NAME_COMPLETE): This is simply the device name, that the human user sees when scanning for nearby devices (via a smartphone, for instance).  </li>
+<li>Shortened local name (BT_DATA_NAME_SHORTENED): A shorter version of the complete local name.  </li>
+<li>Uniform Resource Identifier (BT_DATA_URI): Used to advertise a URI like website addresses (URLs).</li>
+<li>Service UUID: The Service Universally Unique Identifier is a number universally unique to a specific service. It can help scanners identify devices that are interesting to connect to. Different options are available here.</li>
+<li><strong>Manufacturer Specific Data (BT_DATA_MANUFACTURER_DATA)</strong>: This is a popular type that enables companies to define their own custom advertising data.</li>
+<li>Flags: 1-bit variables that can flag a certain property or operational mode of that device. While up to 8 flags can be set, we'll focus on a few commonly used ones:<ul>
+<li>BT_LE_AD_LIMITED: Sets LE Limited Discoverable Mode, used with connectable advertising to indicate to a central that the device is only available for a certain amount of time before the advertising times out.  </li>
+<li>BT_LE_AD_GENERAL: Indicates that the device is in LE General Discoverable Mode, meaning it's available for connection over a long period (effectively, no timeout).       </li>
+<li>BT_LE_AD_NO_BREDR: Specifies that the device does not support Classic Bluetooth (BR/EDR), only Bluetooth Low Energy (BLE).  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "toc.follow", "content.code.annotate"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+      
+    
+  </body>
+</html>
