@@ -17,7 +17,7 @@ throughout the development and plan accordingly.
 
 
 <!-- Your exemplar title. Make it sound catchy! -->
-# ReCoDE-A-BLE(Bluetooth Low Energy)-neighbor-discovery-protocol-on-nRF52
+# A BLE (Bluetooth Low Energy) Neighbour Discovery Protocol on nRF52
 
 <!-- A brief description of your exemplar, which may include an image -->
 
