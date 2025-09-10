@@ -10,6 +10,9 @@ dependencies = [
     # Add runtime dependencies here
 ]
 
+[tool.setuptools]
+packages = []
+
 [project.optional-dependencies]
 dev = [
     "mkdocs==1.6.1",
