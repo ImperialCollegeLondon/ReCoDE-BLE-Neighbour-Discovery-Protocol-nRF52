@@ -93,7 +93,7 @@ you must include a relevant section that helps with learning this library.
 2. Once you’re comfortable with that, take a moment to complete [Exercise 2](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/lessons/lesson-1-nrf-connect-sdk-introduction/topic/exercise-2-1/). It offers practical experience in building and flashing applications onto your development board using the nRF Connect SDK. If you’re new to Nordic’s workflow, this exercise will be especially valuable in helping you become familiar with compiling firmware and programming your device smoothly.
 
 3. The [Notebook: demo](notebooks/demo.md) notebook walks you through the beginner-level example in the `demo` folder step by step:
-    - Learn the theory: It first refers to the [What is BLEnd? Theoretical Foundations](docs/BLEnd.md) and [BLE Advertising and Scanning: What You Need to Know](docs/BLE_background_1.md) documents in the `docs` folder to introduce the basics of BLE and the BLEnd protocol.   
+    - Learn the theory: It first refers to the [What is BLEnd? Theoretical Foundations](docs/BLEnd.md) and [BLE Advertising and Scanning: What You Need to Know](docs/BLE_Background.md) documents in the `docs` folder to introduce the basics of BLE and the BLEnd protocol.   
     - Understand the code: Next, it uses the [How to Use a Timer](docs/introduction_to_Ktimer.md) and [Introduction to GAP](docs/introduction_to_GAP.md). document to explain how the example code interacts with the official BLE API (Application Programming Interface).   
     - See the results: Finally, it presents the observed output so you can compare your own results with the expected behavior. In this stage, you should see your devices scanning and advertising, allowing them to discover nearby devices.  
 
@@ -131,7 +131,7 @@ Overview of code organisation and structure.
 │ ├── CMakeLists.txt
 │ ├── prj.conf
 ├── docs
-│ ├── BLE_background_1.md
+│ ├── BLE_Background.md
 │ ├── BLEnd.md
 │ ├── introduction_to_GAP.md
 │ ├── introduction_to_Ktimer.md

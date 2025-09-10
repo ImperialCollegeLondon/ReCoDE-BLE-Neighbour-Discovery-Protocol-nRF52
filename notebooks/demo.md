@@ -3,7 +3,7 @@
 
 This notebook provides a walkthrough of the example in the `demo` folder. These examples are designed to demonstrate how neighbor discovery works using BLE advertisements and scanning, with a particular focus on the BLEnd protocol [What is BLEnd? Theoretical Foundations](../docs/BLEnd.md).
 
-For background information on BLE advertisement/scanning mechanisms and the BLEnd neighbor discovery protocol, please refer to the documentation [BLE Advertising and Scanning: What You Need to Know](../docs/BLE_background_1.md).
+For background information on BLE advertisement/scanning mechanisms and the BLEnd neighbor discovery protocol, please refer to the documentation [BLE Advertising and Scanning: What You Need to Know](../docs/BLE_Background.md).
 
 
 ## ⚙️ Demo Implementation

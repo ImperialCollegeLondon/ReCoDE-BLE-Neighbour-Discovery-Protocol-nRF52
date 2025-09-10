@@ -1,7 +1,7 @@
 
 #  What is BLEnd? Theoretical Foundations
 
-> **Note:** If you're completely new to BLE, please first read the document [BLE Advertising and Scanning: What You Need to Know](BLE_background_1.md) to ensure a clear understanding of the BLE scanning, advertising, and discovery process.
+> **Note:** If you're completely new to BLE, please first read the document [BLE Advertising and Scanning: What You Need to Know](BLE_Background.md) to ensure a clear understanding of the BLE scanning, advertising, and discovery process.
 
 
 In many common Bluetooth Low Energy (BLE) applications, a simple client-server model works perfectly well for device discovery. Typically, one device acts as a scanner (which becomes the Central after connection), while another device acts as an advertiser (becoming the Peripheral). This leads to a unidirectional discovery process, where the Central actively searches for Peripherals. A classic example is a phone scanning for a smart device advertising its presence; once found, a connection is established, and application-specific interactions follow.

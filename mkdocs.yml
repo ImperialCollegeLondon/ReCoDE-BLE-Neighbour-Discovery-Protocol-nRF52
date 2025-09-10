@@ -60,3 +60,13 @@ markdown_extensions:
 # Render math in mkdocs
 extra_javascript:
   - https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML
+
+nav:
+  - Home: index.md
+  - Background:
+    - Intro to BLEnd: BLEnd.md
+    - BLE Background: BLE_Background.md
+    - Using a Timer: introduction_to_Ktimer.md
+    - Intro to GAP: introduction_to_GAP.md
+  - First Demo: demo.md
+  - Second Demo: demo_connect.md

@@ -1,4 +1,4 @@
-# Demo_connect Notebook
+# Demo-Connect Notebook
 ## Introduction   
 In the previous example from the `demo` folder, you learned how to configure advertising and scanning to enable device discovery using BLE. In this example, we take it a step further: once devices discover each other, they proceed to establish a connection and demonstrate basic data exchange through a custom service.
 

@@ -75,7 +75,7 @@ Zero on success or (negative) error code otherwise.
         LOG_INF("Bluetooth initialized\n");
     ```	
 ### 2. Configuring Advertisement
-The functions described below are central to implementing BLE advertising in your applications. Before diving into their specifics, we strongly recommend you first read our [BLE Advertising and Scanning: What You Need to Know](BLE_background_1.md) document. This will give you the essential foundational knowledge of how BLE advertising works, which is crucial for understanding these functions.
+The functions described below are central to implementing BLE advertising in your applications. Before diving into their specifics, we strongly recommend you first read our [BLE Advertising and Scanning: What You Need to Know](BLE_Background.md) document. This will give you the essential foundational knowledge of how BLE advertising works, which is crucial for understanding these functions.
 
 #### **Related Structures**  
 - **struct bt_le_adv_param**: specifies what fields (variables) are needed to describe Bluetooth Low Energy (LE) advertising parameters.
